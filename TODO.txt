@@ -1,0 +1,15 @@
+
+
+1.  Write code to read from config file
+2.  Write window code to allow setting values dynamicly. Use icons from ARP: 
+		zer0Kerbal: https://spacedock.info/mod/2403
+		zer0Kerbal: https://spacedock.info/mod/15 (ARPIcons - formerly Olympic1's ARP Icons)
+
+3.  Write code to save values to config file
+4.	Write code to apply to all desired vessels, check intervals to be longer
+
+5.  Create config file for initial default resources:
+	Low EC  percentage or absolute value
+	Low airspeed (configurable per vessel) stall warning ???? not a resource, maybe add to DangerAlert instead
+	Low fuel (tank)
+	Low fuel (all active tanks)
