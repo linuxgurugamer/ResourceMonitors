@@ -12,6 +12,7 @@ using ClickThroughFix;
 using ToolbarControl_NS;
 using Expansions.Missions.Tests;
 using HaystackReContinued;
+using System.Globalization;
 
 namespace AlertMonitors
 {
@@ -34,7 +35,6 @@ namespace AlertMonitors
 
         int resourceIndex = 0;
 
-        string resourceName = "ElectricCharge";
         string resourcePercentage = "20";
 
         internal AlertSoundPlayer soundplayer = null;
@@ -133,6 +133,8 @@ namespace AlertMonitors
             visible = false;
             toolbarControl.SetFalse(false);
         }
+
+
         public List<string> resourceList = new List<string>();
 
         public void Get_AlertMonitorsModule(Vessel to = null)
@@ -145,6 +147,7 @@ namespace AlertMonitors
             else
                 workingRMD = null;
         }
+
         public void GetResourceList(Vessel to = null)
         {
             resourceList.Clear();
@@ -160,15 +163,20 @@ namespace AlertMonitors
                     for (int j = 0; j < p.Resources.Count; j++)
                     {
                         PartResource r = p.Resources[j];
-                        Log.Info("Part: " + p.partInfo.title + ", resource: " + r.resourceName);
-                        if (!resourceList.Contains(r.resourceName))
-                            resourceList.Add(r.resourceName);
+                        Log.Info("Part: " + p.partInfo.title + ", resource: " + r.info.name);
+                        if (!resourceList.Contains(r.info.name))
+                            resourceList.Add(r.info.name);
                     }
                 }
             }
             else
             {
-                resourceList.Add(resourceName);
+                // Space center, get list of all resources in game ???
+                foreach (var r in PartResourceLibrary.Instance.resourceDefinitions)
+                {
+                    if (!Main.common || Main.commonResources.Contains(r.name))
+                        resourceList.Add(r.name);
+                }
             }
             Log.Info("GetResourceList, total resources found: " + resourceList.Count);
         }
@@ -195,6 +203,7 @@ namespace AlertMonitors
         Vector2 soundFileSelScrollVector;
         string lastSelectedSoundFile = "";
         bool previewEnabled = false;
+
         void SoundSelectionWindow(int id)
         {
             GUIStyle toggleStyle = new GUIStyle(GUI.skin.label);
@@ -217,7 +226,7 @@ namespace AlertMonitors
 
                 GUILayout.BeginHorizontal();
                 {
-                    if (lastSelectedSoundFile!= fileName)
+                    if (lastSelectedSoundFile != fileName)
                         toggleStyle.normal.textColor = Color.red;
                     else
                         toggleStyle.normal.textColor = Color.green;
@@ -281,7 +290,7 @@ namespace AlertMonitors
         }
 
 
-            void ShowWindow(int windowId)
+        void ShowWindow(int windowId)
         {
             if (visible)
             {
@@ -300,8 +309,6 @@ namespace AlertMonitors
 
         ResourceMonitorDef toDel = null;
 
-
-
         int previewSound = 0;
 
         void ShowResourceGUI()
@@ -317,29 +324,40 @@ namespace AlertMonitors
 #endif
             toDel = null;
             textFieldStyle.normal.textColor = Color.green;
-            if (HaystackWrapper.HaystackAvailable)
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
+                if (HaystackWrapper.HaystackAvailable)
+                {
+                    GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
 
-                if (GUILayout.Button("Haystack"))
-                {
-                    HaystackWrapper.ButtonClick();
-                }
-                if (GUILayout.Button("Get Vessel From Haystack"))
-                {
-                    Log.Info("GetVesselFromHaystack");
-                    if (HaystackWrapper.SelectedVessel != null)
+                    if (GUILayout.Button("Haystack"))
                     {
-                        Log.Info("Vessel name: " + HaystackWrapper.SelectedVessel.vesselName);
-                        JumpAndBackup.JumpToVessel(HaystackWrapper.SelectedVessel);
+                        HaystackWrapper.ButtonClick();
                     }
+                    if (GUILayout.Button("Get Vessel From Haystack"))
+                    {
+                        Log.Info("GetVesselFromHaystack");
+                        if (HaystackWrapper.SelectedVessel != null)
+                        {
+                            Log.Info("Vessel name: " + HaystackWrapper.SelectedVessel.vesselName);
+                            JumpAndBackup.JumpToVessel(HaystackWrapper.SelectedVessel);
+                        }
+                    }
+                    GUILayout.EndHorizontal();
                 }
-
-                GUILayout.EndHorizontal();
+            }
+            else
+            {
+                var b = GUILayout.Toggle(Main.common, "Only allow common resources for new monitors");
+                if (b!=Main.common)
+                {
+                    Main.common = b;
+                    GetResourceList();
+                }
             }
 
             GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
-            if (GUILayout.Button("Add Resource"))
+            if (GUILayout.Button("Add Resource Monitor"))
             {
                 workingRMD.Add(new ResourceMonitorDef("ElectricCharge", "Alarm1", 5f, 1));
 
@@ -390,7 +408,8 @@ namespace AlertMonitors
                         curResource = resourceList.Count - 1;
                     else
                         curResource--;
-                    resourceAlert.SetResource(resourceList[curResource]);
+
+                    resourceAlert.SetResource(PartResourceLibrary.Instance.resourceDefinitions[resourceList[curResource]].displayName);
                 }
                 GUILayout.Label(resourceAlert.resname, textFieldStyle, GUILayout.Width(120));
                 if (GUILayout.Button(">", GUILayout.Width(20)))
@@ -448,12 +467,26 @@ namespace AlertMonitors
                 //GUILayout.FlexibleSpace();
                 //                                                                            *
                 // ****************************************************************************
-
-
-                float f = resourceAlert.percentage;
-                GUILayout.Label(f.ToString() + "%", GUILayout.Width(35));
-                f = GUILayout.HorizontalSlider(f, 0f, 99f, GUILayout.Width(100));
-                resourceAlert.percentage = (int)f;
+                bool b = (resourceAlert.percentage > 0);
+                b = GUILayout.Toggle(b, "%");
+                if (b)
+                {
+                    float f = resourceAlert.percentage;
+                    GUILayout.Label(f.ToString() + "%", GUILayout.Width(35));
+                    f = GUILayout.HorizontalSlider(f, 1f, 99f, GUILayout.Width(100));
+                    resourceAlert.percentage = (int)f;
+                    resourceAlert.minAmt = 0;
+                }
+                else
+                {
+                    string f = resourceAlert.minAmt.ToString();
+                    f = GUILayout.TextField(f, GUILayout.Width(35));
+                    if (double.TryParse(f, out double d))
+                    {
+                        resourceAlert.minAmt = Math.Max(0.1, d);
+                    }
+                    resourceAlert.percentage = 0;
+                }
                 resourceAlert.Enabled = GUILayout.Toggle(resourceAlert.Enabled, "", toggleStyle);
                 GUILayout.Space(5);
                 if (GUILayout.Button("X", GUILayout.Width(20)))
@@ -487,11 +520,29 @@ namespace AlertMonitors
                 workingRMD.Remove(toDel);
             GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
 
-            if (GUILayout.Button("Close"))
+            if (HighLogic.LoadedSceneIsFlight)
             {
-                SaveSettings();
-                GuiOff();
-                soundSelectionWindow = false;
+                if (GUILayout.Button("Close"))
+                {
+                    SaveSettings();
+                    GuiOff();
+                    soundSelectionWindow = false;
+                }
+            }
+            else
+            {
+                if (GUILayout.Button("Save"))
+                {
+                    SaveSettings();
+                    GuiOff();
+                    soundSelectionWindow = false;
+                }
+                if (GUILayout.Button("Cancel"))
+                {
+                    GuiOff();
+                    soundSelectionWindow = false;
+                }
+
             }
             GUILayout.EndHorizontal();
         }

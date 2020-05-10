@@ -23,5 +23,13 @@ namespace AlertMonitors
 
         internal const int SOUND_WIDTH = 120;
 
+        internal static bool common = false;
+        internal static List<string> commonResources = new List<string>() { "ElectricCharge", "LiquidFuel", "Oxidizer", "MonoPropellant", "XenonGas" };
+
+        void LoadDefaults()
+        {
+
+        }
+
     }
 }

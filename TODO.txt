@@ -13,3 +13,7 @@
 	Low airspeed (configurable per vessel) stall warning ???? not a resource, maybe add to DangerAlert instead
 	Low fuel (tank)
 	Low fuel (all active tanks)
+
+6.  Config file for common resources
+		Default:  EC, liquidfuel, oxidizer, monoprop, xenon
+toggle to only show common resources

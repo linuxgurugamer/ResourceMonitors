@@ -8,7 +8,6 @@ namespace VesselModuleSaveFramework
 {
     public class VesselModuleSave : VesselModule
     {
-        // public Vessel vessel { get; private set; } //built in VesselModule does not have this for some reason, add it.
         public string IDType() //return our identifier for the MOD using this, not for this instance of VesselModule
         {
             return this.GetType().Namespace + this.GetType().Name; //returns namespace and the inherited module name, should serve as a unique identifer for each mod using this framework
