@@ -1,0 +1,11 @@
+Copyright/Attribution Notice: 
+This pack is released under the public domain CC0 license. 
+If you want to give credit (not required): 
+"Author" : "Lokif"
+
+_Load.wav
+_Misc_sound.wav
+_Negative.wav
+_Negative_2.wav
+_Positive.wav
+_Wave.wav

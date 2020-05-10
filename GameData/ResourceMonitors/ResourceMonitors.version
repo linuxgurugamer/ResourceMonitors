@@ -1,10 +1,10 @@
 {
   "NAME": "Haystack ReContinued",
-  "URL": "http://ksp.spacetux.net/avc/AlertMonitors",
-  "DOWNLOAD": "https://github.com/linuxgurugamer/AlertMonitors/releases",
+  "URL": "http://ksp.spacetux.net/avc/ResourceMonitors",
+  "DOWNLOAD": "https://github.com/linuxgurugamer/ResourceMonitors/releases",
   "GITHUB": {
     "USERNAME": "linuxgurugamer",
-    "REPOSITORY": "AlertMonitors"
+    "REPOSITORY": "ResourceMonitors"
   },
   "VERSION": {
     "MAJOR": 0,
