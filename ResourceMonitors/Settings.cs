@@ -85,6 +85,9 @@ namespace ResourceMonitors
         [GameParameters.CustomParameterUI("Alternate skin")]
         public bool altSkin = false;
 
+        [GameParameters.CustomParameterUI("Compact display")]
+        public bool compact = false;
+
         [GameParameters.CustomParameterUI("Use text only for resources")]
         public bool useTextOnly = false;
 
@@ -96,8 +99,6 @@ namespace ResourceMonitors
             toolTip = "Only works when either ARP or ARP Icons are installed")]
         public bool useIconsAndText = true;
 
-        [GameParameters.CustomParameterUI("compact")]
-        public bool compact = false;
 
 
         bool oldAltSkin = false;
