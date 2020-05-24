@@ -62,7 +62,7 @@ namespace ResourceMonitors
                 HaystackReContinued.API.SetVisibility(VesselType.DeployedScienceController, true);
                 HaystackReContinued.API.SetVisibility(VesselType.DeployedSciencePart, true);
 
-                if (HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().snapHaystack)
+                if (HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().snapHaystack)
                     HaystackReContinued.API.SetPosition(ResourceAlertWindow.windowPosition.x + ResourceAlertWindow.windowPosition.width, ResourceAlertWindow.windowPosition.y);
             }
         }

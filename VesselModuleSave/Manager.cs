@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 
@@ -37,7 +38,7 @@ namespace VesselModuleSaveFramework
                     Debug.Log("VesseModuleSave duplicate data found on load");
                 }
             }
-            }
+        }
 
         public static ConfigNode SaveRoutine() //save data to .sfs, called on GameSave event
         {
@@ -117,7 +118,7 @@ namespace VesselModuleSaveFramework
 
         public static void KillVessel(string vsl) //remove vessel from static data storage on it's death
         {
-            foreach(KeyValuePair<string,ConfigNode> data in VesselModuleConfigNodes)
+            foreach (KeyValuePair<string, ConfigNode> data in VesselModuleConfigNodes)
             {
                 data.Value.RemoveNodes(vsl);
             }
@@ -158,7 +159,7 @@ namespace VesselModuleSaveFramework
                 node.RemoveNodes("VMSNode"); //should only ever be on VMSnode in a file, remove all nodes to error trap it
             }
             node.AddNode(VesselModuleStaticData.SaveRoutine());
-            }
+        }
         private void GameLoadTrigger(ConfigNode node) //load data from .sfs file and then refresh any already loaded vessels, may be no vessels loaded depending on race conditions
         {
             VesselModuleStaticData.ClearData();

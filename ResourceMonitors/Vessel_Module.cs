@@ -16,7 +16,7 @@ namespace ResourceMonitors
         [KSPField(isPersistant = true)]
         bool initted = false;
 
-        bool NotA_Vessel { get { return Vessel.vesselName.Substring(0, 3) == "Ast"; } }
+        bool NotA_Vessel { get { if (Vessel.vesselName.Length < 3) return false; return Vessel.vesselName.Substring(0, 3) == "Ast"; } }
 
         public override void VSMStart()
         {
@@ -29,6 +29,8 @@ namespace ResourceMonitors
             GameEvents.onGamePause.Add(OnPause);
             GameEvents.onGameUnpause.Add(OnUnpause);
 
+            if (vessel.missionTime == 0)
+                ResourceAlertWindow.AddCommonResourceMonitors();
             StartCoroutine(MonitorThread());
         }
 
@@ -158,13 +160,13 @@ namespace ResourceMonitors
 
             while (true)
             {
-                bool soundActive = HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().soundToggle;
+                bool soundActive = HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().soundToggle;
 
                 if (!Paused)
                 {
                     for (int i = 0; i < rmdList.Count; i++)
                     {
-                        rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().masterVolume);
+                        rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
                         bool lowResource = false;
 
                         if (GetResourceAmt(rmdList[i].prd.id, out double max, out double cur))
@@ -209,8 +211,8 @@ namespace ResourceMonitors
             if (!rmdList[i].alarmSounding)
             {
                 ScreenMessages.PostScreenMessage("Low Resource Detected for: " + rmdList[i].resname, 5);
-                rmdList[i].soundplayer.LoadNewSound(Main.SOUND_DIR + rmdList[i].alarm, HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().resourceAlertRepetition);
-                rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().masterVolume);
+                rmdList[i].soundplayer.LoadNewSound(Main.SOUND_DIR + rmdList[i].alarm, HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().resourceAlertRepetition);
+                rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
                 rmdList[i].soundplayer.PlaySound();
                 rmdList[i].alarmStartTime = DateTime.Now.Ticks / TimeSpan.TicksPerSecond;
                 rmdList[i].alarmSounding = true;
@@ -232,16 +234,13 @@ namespace ResourceMonitors
                     }
                 }
             }
-
         }
+
         void StopAlarm(int i)
         {
             rmdList[i].soundplayer.StopSound();
             rmdList[i].alarmSounding = false;
         }
-
-      
-
     }
 }
 

@@ -34,26 +34,9 @@
 2:ResourceMonitors,ResourceMonitors/ResourceMonitors.csproj,ResourceMonitors.version,GameData/ResourceMonitors/Plugins
 
 # 3:SOURCEFILE, DESTDIR
-3:KerbalHotSeat.version,GameData/KerbalHotSeat
-#3:LICENSE.md,GameData/KerbalHotSeat
-#3:README.md,GameData/KerbalHotSeat
-
-# 4:SOURCDIR, DESTDIR
-#4:Textures,GameData/ManeuverQueue/Textures
-
-# 5:ModuleManager
-# 5:ModuleManager
-
-# 6:mod_id
-#6:1272
-
-# 7: AdditionalFolders in the GameData, 1 per line
-# Special case if files are in the GameData directory itself
-# Special Case:    7:GameData
-#7:ConnectedLivingSpace
-
-# 8: AdditionalMods to include
-#8:ConnectedLivingSpace
+3:ResourceMonitors.version,GameData/ResourceMonitors
+3:License.md,GameData/ResourceMonitors
+3:README.md,GameData/ResourceMonitors
 
 #
 # End of file

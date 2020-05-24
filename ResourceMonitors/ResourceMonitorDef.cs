@@ -33,7 +33,7 @@ namespace ResourceMonitors
         internal bool alarmSounding = false;
         internal long alarmStartTime = 0;
 
-        internal ResourceMonitorDef()        { }
+        internal ResourceMonitorDef() { }
         internal ResourceMonitorDef(string resname, string alarm, float percentage, double minAmt)
         {
             this.alarm = alarm;
@@ -42,6 +42,18 @@ namespace ResourceMonitors
 
             if (!SetResource(resname))
                 Log.Error("Resource can't be set: " + resname);
+            if (!InitSoundplayer())
+                Log.Error("Soundplayer can't be initialized");
+        }
+
+        public ResourceMonitorDef(ResourceMonitorDef r)
+        {
+            this.resname = r.resname;
+            this.monitorByPercentage = r.monitorByPercentage;
+            this.minAmt = r.minAmt;
+            this.alarm = r.alarm;
+            this.Enabled = r.Enabled;
+            this.prd = r.prd;
             if (!InitSoundplayer())
                 Log.Error("Soundplayer can't be initialized");
         }
@@ -72,7 +84,7 @@ namespace ResourceMonitors
             configNode.AddValue(ENABLED, this.Enabled);
 
             configNode.AddValue(RESOURCENAME, this.prd.name);
-           
+
             return configNode;
         }
         internal static ResourceMonitorDef FromConfigNode(ConfigNode configNode)
@@ -91,9 +103,10 @@ namespace ResourceMonitors
         {
             return "resname: " + resname +
                 ", percentage: " + percentage +
-                ", minAmt: " + minAmt + 
+                ", minAmt: " + minAmt +
                 ", alarm: " + alarm +
-                ", Enabled: " + Enabled               ;
+                ", Enabled: " + Enabled;
         }
+
     }
 }

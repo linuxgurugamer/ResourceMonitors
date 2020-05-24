@@ -10,28 +10,15 @@ using KSP.UI.Screens;
 
 using ClickThroughFix;
 using ToolbarControl_NS;
-using Expansions.Missions.Tests;
-using HaystackReContinued;
-using System.Globalization;
+
 
 namespace ResourceMonitors
 {
-#if false
-    enum GUIWindow
-    {
-        OVERVIEW,
-        OPTIONS,
-        COLLISION,
-        RESOURCE
-    }
-#endif
 
     [KSPAddon(KSPAddon.Startup.FlightAndKSC, false)]
-    class ResourceAlertWindow : MonoBehaviour
+    partial class ResourceAlertWindow : MonoBehaviour
     {
-#if false
-        public GUIWindow Window = GUIWindow.OPTIONS;
-#endif
+        internal static ResourceAlertWindow fetch;
 
         int resourceIndex = 0;
 
@@ -42,17 +29,23 @@ namespace ResourceMonitors
 
         internal static Rect windowPosition = new Rect(Screen.width / 2 - Main.WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.WIDTH, Main.HEIGHT);
         internal static Rect soundWindowPosition = new Rect(Screen.width / 2 - Main.SOUND_WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.SOUND_WIDTH, Main.HEIGHT);
+
+        internal static Rect resourceWindowPosition = new Rect(Screen.width / 2 - Main.SOUND_WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.SOUND_WIDTH, Main.HEIGHT);
+
+
+
         private bool visible = false; //Inbuilt "visible" boolean, in case I need it for something else.
 
 
         static string[] dirEntries;
         static List<string> soundEntriesList = null;
 
-        internal const string MODID = "AlertMonitors_NS";
-        internal const string MODNAME = "Alert Monitors";
+        internal const string MODID = "ResourceMonitors_NS";
+        internal const string MODNAME = "Resource Monitors";
 
         void Start()
         {
+            fetch = this;
             if (toolbarControl == null)
             {
                 toolbarControl = gameObject.AddComponent<ToolbarControl>();
@@ -70,15 +63,6 @@ namespace ResourceMonitors
                 soundplayer = new AlertSoundPlayer();
                 soundplayer.Initialize("selection");
             }
-#if false
-            if (!GUIStyleInitted)
-            {
-                buttonStyle = new GUIStyle(GUI.skin.button);
-                toggleStyle = new GUIStyle(GUI.skin.toggle);
-                textFieldStyle = new GUIStyle(GUI.skin.textField);
-             //   GUIStyleInitted = true;
-            }
-#endif
             GameEvents.onVesselChange.Add(onVesselChange);
 
             Log.Info("windowPosition: " + windowPosition.ToString());
@@ -185,156 +169,120 @@ namespace ResourceMonitors
         {
         }
 
+        float previewWidth = 0;
         private void OnGUI()
         {
-            if (visible)
+            if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
             {
-                windowPosition = ClickThruBlocker.GUILayoutWindow(1987432520, windowPosition, ShowWindow, "Alert Monitors");
-            }
-#if true
-            if (soundSelectionWindow)
-            {
-                soundWindowPosition = ClickThruBlocker.GUILayoutWindow(12345098, soundWindowPosition, SoundSelectionWindow, "Sound Selection");
-            }
-#endif
-        }
-
-        bool soundSelectionWindow = false;
-        Vector2 soundFileSelScrollVector;
-        string lastSelectedSoundFile = "";
-        bool previewEnabled = false;
-
-        void SoundSelectionWindow(int id)
-        {
-            GUIStyle toggleStyle = new GUIStyle(GUI.skin.label);
-
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Sound Selection");
-            GUILayout.FlexibleSpace();
-            previewEnabled = GUILayout.Toggle(previewEnabled, "Preview Enabled");
-            if (!previewEnabled && soundplayer.SoundPlaying())
-                soundplayer.StopSound();
-            GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            soundFileSelScrollVector = GUILayout.BeginScrollView(soundFileSelScrollVector);
-            int cnt = 0;
-            foreach (var d in soundEntriesList)
-            {
-                string fileName = d;
-
-                GUILayout.BeginHorizontal();
-                {
-                    if (lastSelectedSoundFile != fileName)
-                        toggleStyle.normal.textColor = Color.red;
-                    else
-                        toggleStyle.normal.textColor = Color.green;
-                }
-                GUILayout.Space(60);
-                if (GUILayout.Button(fileName, toggleStyle))
-                {
-
-                    lastSelectedSoundFile = fileName;
-                    if (previewEnabled)
-                    {
-                        soundplayer.LoadNewSound(Main.SOUND_DIR + lastSelectedSoundFile, true);
-                        soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().masterVolume);
-                        soundplayer.PlaySound(); //Plays sound
-
-                    }
-                }
-                cnt++;
-                GUILayout.EndHorizontal();
-            }
-            GUILayout.EndScrollView();
-            GUILayout.EndHorizontal();
-
-            GUILayout.BeginHorizontal();
-            //GUILayout.FlexibleSpace();
-            GUILayout.Space(10);
-#if false
-            if (!soundplayer.SoundPlaying()) //If the sound isn't playing, play the sound.
-            {
-                if (GUILayout.Button("Play Alarm"))
-                {
-                    soundplayer.LoadNewSound(Main.SOUND_DIR + lastSelectedSoundFile, true);
-                    soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().masterVolume);
-                    soundplayer.PlaySound(); //Plays sound
-                }
+                GUI.skin = HighLogic.Skin;
+                // windowPosition.width = Main.WIDTH - 15;
+                previewWidth = 60;
             }
             else
             {
-                if (GUILayout.Button("Stop Alarm"))
-                    soundplayer.StopSound();
+                //windowPosition.width = Main.WIDTH;
+                previewWidth = 70;
             }
-#endif
-
-
-            // GUILayout.FlexibleSpace();
-            GUILayout.Space(10);
-            if (GUILayout.Button("OK", GUILayout.Width(90)))
-            {
-                resourceAlert.alarm = lastSelectedSoundFile;
-                soundSelectionWindow = false;
-            }
-            //GUILayout.FlexibleSpace();
-            GUILayout.Space(10);
-            if (GUILayout.Button("Cancel", GUILayout.Width(90)))
-            {
-                soundSelectionWindow = false;
-            }
-            //GUILayout.FlexibleSpace();
-            GUILayout.EndHorizontal();
-            GUI.DragWindow();
-        }
-
-
-        void ShowWindow(int windowId)
-        {
+            if (!Main.skinInitialized)
+                Main.InitStyles();
             if (visible)
             {
-                ShowResourceGUI();
-                GUI.DragWindow();
+                windowPosition = ClickThruBlocker.GUILayoutWindow(1987432520, windowPosition, ShowResourceGUIWindow, "Resource Monitors");
+                //Log.Info("windowPosition: " + windowPosition + ",  Main.WIDTH: " + Main.WIDTH);
+                //if (HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().altSkin)
+                //    windowPosition.width = Main.WIDTH + 60;
+                //else
+                windowPosition.width = Main.WIDTH + 40;
+            }
+            if (visible && soundSelectionWindow)
+            {
+                soundWindowPosition = ClickThruBlocker.GUILayoutWindow(12345098, soundWindowPosition, SoundSelectionWindow, "Sound Selection");
+            }
+            if (visible && resourceSelectionWindow)
+            {
+                resourceWindowPosition = ClickThruBlocker.GUILayoutWindow(12345038, resourceWindowPosition, ResourceSelectionWindow, "Resource Selection");
             }
         }
+
+        bool soundSelectionWindow = false;
+        bool resourceSelectionWindow = false;
+        Vector2 soundFileSelScrollVector;
+        Vector2 resourceSelScrollVector;
+        string lastSelectedSoundFile = "";
+        string lastSelectedResource = "";
+        bool previewEnabled = false;
+
+
 
         Vector2 scrollPos;
         ResourceMonitorDef resourceAlert;
 
-        static GUIStyle buttonStyle;
-        static GUIStyle toggleStyle;
-        static GUIStyle textFieldStyle;
-        static bool GUIStyleInitted = false;
 
         ResourceMonitorDef toDel = null;
 
         int previewSound = 0;
 
-        void ShowResourceGUI()
+        void ShowResourceGUIWindow(int windowId)
         {
-#if true
-            if (!GUIStyleInitted)
+                Main.WIDTH = 543;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
+                Main.WIDTH -= 20;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
+                Main.WIDTH -= 20;
+
+            int resourceWidth = 0;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsOnly)
             {
-                buttonStyle = new GUIStyle(GUI.skin.button);
-                toggleStyle = new GUIStyle(GUI.skin.toggle);
-                textFieldStyle = new GUIStyle(GUI.skin.textField);
-                GUIStyleInitted = true;
+                Main.WIDTH -= 40;
+                resourceWidth = -40;
             }
-#endif
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsAndText)
+            {
+                Main.WIDTH += 40;
+                resourceWidth = 40;
+            }
+
+            GUIStyle btnStyle = null;
+            GUIStyle toggleStyle = null;
+            GUIStyle redBtnStyle = null;
+            GUIStyle textFieldStyle = null;
+            GUIStyle horSliderStyle = null;
+            GUIStyle thumbStyle = null;
+            GUIStyle labelStyle = null;
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
+            {
+                btnStyle = Main.btnCompactStyle;
+                toggleStyle = Main.toggleCompactStyle;
+                redBtnStyle = Main.redButtonCompactStyle;
+                textFieldStyle = Main.textFieldCompactStyle;
+                horSliderStyle = Main.horSliderCompactStyle;
+                thumbStyle = Main.thumbCompactStyle;
+                labelStyle = Main.labelCompactStyle;
+            }
+            else
+            {
+                btnStyle = GUI.skin.button;
+                toggleStyle = GUI.skin.toggle;
+                redBtnStyle = Main.redButtonStyle;
+                textFieldStyle = Main.textFieldStyle;
+                horSliderStyle = Main.horSliderStyle;
+                thumbStyle = Main.thumbStyle;
+                labelStyle = Main.labelStyle;
+            }
+
             toDel = null;
-            textFieldStyle.normal.textColor = Color.green;
+            Main.textFieldStyle.normal.textColor = Color.green;
             if (HighLogic.LoadedSceneIsFlight)
             {
                 if (HaystackWrapper.HaystackAvailable)
                 {
-                    GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
+                    GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
 
-                    if (GUILayout.Button("Haystack"))
+                    if (GUILayout.Button("Haystack", btnStyle))
                     {
                         HaystackWrapper.ButtonClick();
                     }
-                    if (GUILayout.Button("Get Vessel From Haystack"))
+                    if (GUILayout.Button("Get Vessel From Haystack", btnStyle))
                     {
                         Log.Info("GetVesselFromHaystack");
                         if (HaystackWrapper.SelectedVessel != null)
@@ -348,7 +296,12 @@ namespace ResourceMonitors
             }
             else
             {
-                var b = GUILayout.Toggle(Main.common, "Only allow common resources for new monitors");
+                GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
+                GUILayout.FlexibleSpace();
+                GUILayout.Label("Common Resource Monitor Definition");
+                GUILayout.FlexibleSpace();
+                GUILayout.EndHorizontal();
+                var b = GUILayout.Toggle(Main.common, "Only allow common resources for new monitors", toggleStyle);
                 if (b != Main.common)
                 {
                     Main.common = b;
@@ -356,121 +309,122 @@ namespace ResourceMonitors
                 }
             }
 
-            GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
-            if (GUILayout.Button("Add Resource Monitor"))
+            GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
+            GUILayout.FlexibleSpace();
+            if (GUILayout.Button("Add Resource Monitor", btnStyle))
             {
                 workingRMD.Add(new ResourceMonitorDef("ElectricCharge", "Alarm1", 5f, 1));
 
                 resourceIndex = workingRMD.Count - 1; //sets index to last one
             }
+            if (workingRMD.Count == 0 && HighLogic.LoadedSceneIsFlight)
+            {
+                GUILayout.FlexibleSpace();
+                if (GUILayout.Button("Apply Common Resource Monitor Settings", btnStyle))
+                {
+                    AddCommonResourceMonitors();
+#if false
+                    foreach (var r in Scenario_Module.defaultRMD)
+                    {
+                        if (resourceList.Contains(r.resname))
+                            workingRMD.Add(new ResourceMonitorDef(r));
+                    }
+#endif
+                    resourceIndex = workingRMD.Count - 1; //sets index to last one
+
+                }
+            }
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Space(5);
+            GUILayout.Space(25);
             GUILayout.Label("Resource", GUILayout.Width(120));
-            GUILayout.Space(65);
+            GUILayout.Space(25);
             GUILayout.Label("Alarm Sound", GUILayout.Width(120));
 
 
-            GUILayout.Space(50);
-            GUILayout.Space(35);
+            GUILayout.Space(30);
+            GUILayout.Space(15);
 
             GUILayout.Label("Amt or % "); // , GUILayout.Width(35));
             //GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
-            GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH + 10));
-            scrollPos = GUILayout.BeginScrollView(scrollPos);
+
+
+
+            GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH)); // + 10));
+            scrollPos = GUILayout.BeginScrollView(scrollPos, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Width(Main.WIDTH + 20));
+
             for (int i = 0; i < workingRMD.Count; i++)
             {
-
-                GUILayout.BeginHorizontal();
+                GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH + 20));
                 resourceAlert = workingRMD[i];
                 if (resourceAlert.Enabled)
                 {
-                    buttonStyle.normal.textColor = Color.green;
-                    toggleStyle.normal.textColor = Color.green;
-                    textFieldStyle.normal.textColor = Color.green;
+                    Main.buttonStyle.normal.textColor = Color.green;
+                    Main.toggleStyle.normal.textColor = Color.green;
+                    Main.textFieldStyle.normal.textColor = Color.green;
                 }
                 else
                 {
-                    buttonStyle.normal.textColor = Color.red;
-                    toggleStyle.normal.textColor = Color.red;
-                    textFieldStyle.normal.textColor = Color.red;
+                    Main.buttonStyle.normal.textColor = Color.red;
+                    Main.toggleStyle.normal.textColor = Color.red;
+                    Main.textFieldStyle.normal.textColor = Color.red;
 
                 }
                 int curResource = -1;
 
+
                 // ****************************************************************************
                 //                                                                            *
-                if (GUILayout.Button("<", GUILayout.Width(20)))
-                {
-                    curResource = resourceList.FindIndex(s => s == resourceAlert.resname);
-                    if (curResource == 0)
-                        curResource = resourceList.Count - 1;
-                    else
-                        curResource--;
+                GUIContent btn = null;
 
-                    resourceAlert.SetResource(PartResourceLibrary.Instance.resourceDefinitions[resourceList[curResource]].displayName);
-                }
-                GUILayout.Label(resourceAlert.resname, textFieldStyle, GUILayout.Width(120));
-                if (GUILayout.Button(">", GUILayout.Width(20)))
+                if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useTextOnly && Main.icons.ContainsKey(resourceAlert.resname))
                 {
-                    curResource = resourceList.FindIndex(s => s == resourceAlert.resname);
-                    if (curResource == resourceList.Count - 1)
-                        curResource = 0;
-                    else
-                        curResource++;
-                    resourceAlert.SetResource(resourceList[curResource]);
+                    if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsOnly)
+                        btn = new GUIContent(Main.icons[resourceAlert.resname]);
+                    if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsAndText)
+                        btn = new GUIContent(PartResourceLibrary.Instance.resourceDefinitions[resourceAlert.resname].displayName,
+                            Main.icons[resourceAlert.resname]);
                 }
+                else
+                {
+                    btn = new GUIContent(PartResourceLibrary.Instance.resourceDefinitions[resourceAlert.resname].displayName);
+                }
+
+
+                if (GUILayout.Button(btn, btnStyle, GUILayout.Width(120)))
+                {
+                    resourceSelectionWindow = !resourceSelectionWindow;
+                    if (resourceSelectionWindow)
+                    {
+                        lastSelectedResource = resourceAlert.resname;
+                    }
+                }
+
                 GUILayout.Space(20);
                 //                                                                            *
                 // ****************************************************************************
 
                 // ****************************************************************************
                 //                                                                            *
-#if false
-                if (GUILayout.Button("<", GUILayout.Width(20)))
+                if (GUILayout.Button(resourceAlert.alarm, btnStyle, GUILayout.Width(90 + resourceWidth)))
                 {
-                    curResource = soundEntriesList.FindIndex(s => s == resourceAlert.alarm);
-                    if (curResource == 0)
-                        curResource = soundEntriesList.Count - 1;
-                    else
-                        curResource--;
-                    resourceAlert.alarm = soundEntriesList[curResource];
+                    soundSelectionWindow = !soundSelectionWindow;
+                    if (soundSelectionWindow)
+                    {
+                        lastSelectedSoundFile = resourceAlert.alarm;
+                    }
                 }
-                GUILayout.Label(resourceAlert.alarm, textFieldStyle, GUILayout.Width(90));
-                if (GUILayout.Button(">", GUILayout.Width(20)))
-                {
-                    curResource = soundEntriesList.FindIndex(s => s == resourceAlert.alarm);
-                    if (curResource == soundEntriesList.Count - 1)
-                        curResource = 0;
-                    else
-                        curResource++;
-                    resourceAlert.alarm = soundEntriesList[curResource];
 
-                    soundSelectionWindow = !soundSelectionWindow;
-                    if (soundSelectionWindow)
-                    {
-                        lastSelectedSoundFile = resourceAlert.alarm;
-                    }
-                }
-#else
-                if (GUILayout.Button(resourceAlert.alarm, GUILayout.Width(90)))
-                {
-                    soundSelectionWindow = !soundSelectionWindow;
-                    if (soundSelectionWindow)
-                    {
-                        lastSelectedSoundFile = resourceAlert.alarm;
-                    }
-                }
-#endif
                 GUILayout.Space(10);
-                //GUILayout.FlexibleSpace();
                 //                                                                            *
                 // ****************************************************************************
-                var newMonitorByPercentage = GUILayout.Toggle(resourceAlert.monitorByPercentage, "%", GUILayout.Width(30));
-                if (newMonitorByPercentage )
+                var newMonitorByPercentage = GUILayout.Toggle(resourceAlert.monitorByPercentage, "", toggleStyle, GUILayout.Width(30));
+                GUILayout.Label("%", labelStyle, GUILayout.Width(20));
+                if (newMonitorByPercentage)
                 {
                     if (HighLogic.LoadedSceneIsFlight && !resourceAlert.monitorByPercentage)
                     {
@@ -483,15 +437,14 @@ namespace ResourceMonitors
                         }
                         resourceAlert.minAmt = 0;
                     }
-                    float f = Math.Max(1f, Math.Min(resourceAlert.percentage,99));
-                    GUILayout.Space(10);
-                    GUILayout.Label(f.ToString() + "%", GUILayout.Width(21));
-                    f = GUILayout.HorizontalSlider(f, 1f, 99f, GUILayout.Width(100));
+                    float f = Math.Max(1f, Math.Min(resourceAlert.percentage, 99));
+
+                    f = GUILayout.HorizontalSlider(f, 1f, 99f, horSliderStyle, thumbStyle, GUILayout.Width(100));
                     resourceAlert.percentage = (int)f;
                 }
                 else
                 {
-                    GUILayout.Space(35);
+                    GUILayout.Space(10);
                     if (HighLogic.LoadedSceneIsFlight && resourceAlert.monitorByPercentage)
                     {
                         if (!newMonitorByPercentage && resourceAlert.percentage > 0 && resourceAlert.minAmt == 0)
@@ -503,35 +456,37 @@ namespace ResourceMonitors
                         }
                         resourceAlert.percentage = 0;
                     }
-
                     string f = resourceAlert.minAmt.ToString("F1");
-                    f = GUILayout.TextField(f, GUILayout.Width(100));
+                    f = GUILayout.TextField(f, textFieldStyle, GUILayout.Width(90));
                     if (double.TryParse(f, out double d))
                     {
                         resourceAlert.minAmt = Math.Max(0.1, d);
                     }
                 }
                 resourceAlert.monitorByPercentage = newMonitorByPercentage;
-                resourceAlert.Enabled = GUILayout.Toggle(resourceAlert.Enabled, "", toggleStyle);
+                resourceAlert.Enabled = GUILayout.Toggle(resourceAlert.Enabled, "", toggleStyle, GUILayout.Width(30));
                 GUILayout.Space(5);
-                if (GUILayout.Button("X", GUILayout.Width(20)))
+                //if (HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().altSkin)
+                //    GUILayout.Space(10);
+                if (GUILayout.Button("X", redBtnStyle, GUILayout.Width(23)))
                     toDel = resourceAlert;
                 GUILayout.Space(5);
                 if (previewSound != curResource || !soundplayer.SoundPlaying())
                 {
-                    if (GUILayout.Button("Preview", GUILayout.Width(60)))
+
+                    if (GUILayout.Button("Preview", btnStyle, GUILayout.Width(previewWidth)))
                     {
                         previewSound = curResource;
                         Log.Info("Preview: " + Main.SOUND_DIR + resourceAlert.alarm);
-                        soundplayer.LoadNewSound(Main.SOUND_DIR + resourceAlert.alarm, HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().resourceAlertRepetition);
-                        soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().masterVolume);
+                        soundplayer.LoadNewSound(Main.SOUND_DIR + resourceAlert.alarm, HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().resourceAlertRepetition);
+                        soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
 
                         soundplayer.PlaySound(true); //Plays sound
                     }
                 }
                 else
                 {
-                    if (GUILayout.Button("Stop", GUILayout.Width(60)))
+                    if (GUILayout.Button("Stop", GUILayout.Width(previewWidth)))
                         soundplayer.StopSound();
                 }
                 GUILayout.EndHorizontal();
@@ -543,7 +498,7 @@ namespace ResourceMonitors
 
             if (toDel != null)
                 workingRMD.Remove(toDel);
-            GUILayout.BeginHorizontal(GUILayout.Width(Main.WIDTH));
+            GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
 
             if (HighLogic.LoadedSceneIsFlight)
             {
@@ -570,6 +525,19 @@ namespace ResourceMonitors
 
             }
             GUILayout.EndHorizontal();
+            GUI.DragWindow();
+        }
+
+        internal static void AddCommonResourceMonitors()
+        {
+            if (ResourceAlertWindow.fetch != null)
+            {
+                foreach (var r in Scenario_Module.defaultRMD)
+                {
+                    if (ResourceAlertWindow.fetch.resourceList.Contains(r.resname))
+                        workingRMD.Add(new ResourceMonitorDef(r));
+                }
+            }
         }
 
         bool ResourceValueCheck()
@@ -589,7 +557,7 @@ namespace ResourceMonitors
                     changed = true;
                 }
             }
-            catch (FormatException e)
+            catch
             {
                 resourcePercentage = "50";
                 changed = true;

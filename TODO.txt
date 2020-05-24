@@ -1,26 +1,17 @@
-5.  Create config file for initial default resources:
-	Low EC  percentage or absolute value
-	Low airspeed (configurable per vessel) stall warning ???? not a resource, maybe add to DangerAlert instead
-	Low fuel (tank)
-	Low fuel (all active tanks)
-
-
-
-1.  Config file for common resources
-		Default:  EC, liquidfuel, oxidizer, monoprop, xenon
-
-1.1.  Write code to read from config file
-1.2.  Write code to save values to config file
 
 2.  Use icons from ARP: 
 		zer0Kerbal: https://spacedock.info/mod/2403
 		zer0Kerbal: https://spacedock.info/mod/15 (ARPIcons - formerly Olympic1's ARP Icons)
 
-4.	Write code to apply to all desired vessels, check intervals to be longer
 
 
+Add code to deal with missing ARP and missing ALT ARP Icons
+Add settings to allow user to display any of :  icon, text or icon & text
+
+
+Enhancements
 5.	Write all available resources to txt file on startup for reference
-
+6.	add new resource to common resources
 
 ResourceAlerts
 {

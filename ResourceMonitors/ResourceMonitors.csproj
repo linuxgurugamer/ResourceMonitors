@@ -7,8 +7,8 @@
     <ProjectGuid>{55A94315-99AC-4E0F-8827-656911A6EF44}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>AlertMonitors</RootNamespace>
-    <AssemblyName>AlertMonitors</AssemblyName>
+    <RootNamespace>ResourceMonitors</RootNamespace>
+    <AssemblyName>ResourceMonitors</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -57,10 +57,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResourceAlertWindow.cs" />
     <Compile Include="ResourceMonitorDef.cs" />
+    <Compile Include="ResourceSelectionWindow.cs" />
     <Compile Include="SafeStopTimeWarp.cs" />
     <Compile Include="Scenario_Module.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="RegisterToolbar.cs" />
+    <Compile Include="SoundSelectionWindow.cs" />
     <Compile Include="Vessel_Module.cs" />
   </ItemGroup>
   <ItemGroup>

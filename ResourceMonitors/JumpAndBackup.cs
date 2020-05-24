@@ -61,7 +61,7 @@ namespace ResourceMonitors
             Boolean blnJumped = true;
             if (HighLogic.LoadedSceneIsFlight)
             {
-                if (BackupSaves() || !HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().CancelFlightModeJumpOnBackupFailure)
+                if (BackupSaves() || !HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().CancelFlightModeJumpOnBackupFailure)
                     vesselToJumpTo = vTarget;
 
                 //if(FlightGlobals.SetActiveVessel(vTarget))
@@ -124,7 +124,7 @@ namespace ResourceMonitors
         {
             JumpAndBackup.SavePath = string.Format("{0}saves/{1}", JumpAndBackup.PathApp, HighLogic.SaveFolder);
 
-            if (!HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().BackupSaves)
+            if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().BackupSaves)
             {
                 return true;
             }
@@ -188,7 +188,7 @@ namespace ResourceMonitors
 
             LogFormatted("{0} KACBackup...{1} Saves found", SaveBackups.Count, OriginalName);
 
-            List<System.IO.FileInfo> SaveBackupsToDelete = SaveBackups.OrderByDescending(fi => fi.CreationTime).Skip(HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().BackupSavesToKeep).ToList<System.IO.FileInfo>();
+            List<System.IO.FileInfo> SaveBackupsToDelete = SaveBackups.OrderByDescending(fi => fi.CreationTime).Skip(HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().BackupSavesToKeep).ToList<System.IO.FileInfo>();
             LogFormatted("{0} KACBackup...{1} Saves to purge", SaveBackupsToDelete.Count, OriginalName);
             for (int i = SaveBackupsToDelete.Count - 1; i >= 0; i--)
             {

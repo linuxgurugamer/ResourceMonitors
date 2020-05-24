@@ -23,7 +23,7 @@ namespace ResourceMonitors
             {
                 double time = DateTime.Now.Ticks;
 
-                ConfigNode alertMonitorsNode = new ConfigNode(Main.ALERTMONITORS);
+                ConfigNode alertMonitorsNode = new ConfigNode(Main.MODNAME);
 
                 foreach (var rmd in defaultRMD)
                 {
@@ -33,7 +33,7 @@ namespace ResourceMonitors
 
                 node.AddNode(alertMonitorsNode);
 
-                ConfigNode guiSettings = new ConfigNode(Main.GUI);
+                ConfigNode guiSettings = new ConfigNode(Main.GUIName);
                 guiSettings.AddValue(X, ResourceAlertWindow.windowPosition.x);
                 guiSettings.AddValue(Y, ResourceAlertWindow.windowPosition.y);
 
@@ -59,7 +59,7 @@ namespace ResourceMonitors
             {
                 defaultRMD.Clear();
                 ConfigNode alertMonitorsNode = null;
-                if (node.TryGetNode(Main.ALERTMONITORS, ref alertMonitorsNode))
+                if (node.TryGetNode(Main.MODNAME, ref alertMonitorsNode))
                 {
                     double time = DateTime.Now.Ticks;
 
@@ -72,7 +72,7 @@ namespace ResourceMonitors
                             defaultRMD.Add(rmd);
                         }
                     }
-                    if (node.TryGetNode(Main.GUI, ref alertMonitorsNode))
+                    if (node.TryGetNode(Main.GUIName, ref alertMonitorsNode))
                     {
                         if (alertMonitorsNode.HasValue(X))
                             ResourceAlertWindow.windowPosition.x = (float)Double.Parse(alertMonitorsNode.GetValue(X));
@@ -92,6 +92,9 @@ namespace ResourceMonitors
 
                     time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
                     Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
+                } else
+                {
+                    defaultRMD = Main.initialDefaultRMD;
                 }
             }
             catch (Exception e)
