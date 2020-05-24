@@ -40,8 +40,9 @@
     <Reference Include="ClickThroughBlocker">
       <HintPath>R:\KSP_1.8.1_dev\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
     </Reference>
-    <Reference Include="HaystackContinued">
-      <HintPath>R:\KSP_1.8.1_dev\GameData\HaystackContinued\Plugins\HaystackContinued.dll</HintPath>
+    <Reference Include="HaystackContinued, Version=0.5.6.4, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\KSP_1.9.1_dev\GameData\HaystackContinued\Plugins\HaystackContinued.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
@@ -50,6 +51,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AlertSoundPlayer.cs" />
+    <Compile Include="AssemblyVersion.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>AssemblyVersion.tt</DependentUpon>
+    </Compile>
     <Compile Include="HaystackWrapper.cs" />
     <Compile Include="JumpAndBackup.cs" />
     <Compile Include="Log.cs" />
@@ -70,6 +76,15 @@
       <Project>{d5608037-2c1d-45f1-9c17-051e3417e644}</Project>
       <Name>VesselModuleSave</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="AssemblyVersion.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>AssemblyVersion.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
@@ -95,5 +110,9 @@
 
 	)
 </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PreBuildEvent>
+	"$(DevEnvDir)\texttransform.exe" "$(ProjectDir)AssemblyVersion.tt"</PreBuildEvent>
   </PropertyGroup>
 </Project>

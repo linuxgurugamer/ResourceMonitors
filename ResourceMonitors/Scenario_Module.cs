@@ -8,6 +8,7 @@ namespace ResourceMonitors
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.EDITOR, GameScenes.FLIGHT, GameScenes.TRACKSTATION, GameScenes.SPACECENTER)]
     class Scenario_Module : ScenarioModule
     {
+        
         internal static List<ResourceMonitorDef> defaultRMD = new List<ResourceMonitorDef>();
 
         const string X = "x";
@@ -87,14 +88,13 @@ namespace ResourceMonitors
 
                         ResourceAlertWindow.windowPosition.height = Main.HEIGHT;
                         ResourceAlertWindow.windowPosition.width = Main.WIDTH;
-                        Log.Info("ScenarioModule, x, y: " + ResourceAlertWindow.windowPosition.x + ", " + ResourceAlertWindow.windowPosition.y);
                     }
 
                     time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
                     Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
                 } else
                 {
-                    defaultRMD = Main.initialDefaultRMD;
+                    ResetDefaultRMD();
                 }
             }
             catch (Exception e)
@@ -103,5 +103,9 @@ namespace ResourceMonitors
             }
         }
 
+        public static void ResetDefaultRMD()
+        {
+            defaultRMD = Main.initialDefaultRMD;
+        }
     }
 }

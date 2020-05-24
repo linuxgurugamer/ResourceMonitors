@@ -34,6 +34,8 @@ namespace ResourceMonitors
         }
         static public Vessel _SelectedVessel { get { return HaystackReContinued.API.SelectedVessel; } }
 
+        static public bool IsVisible {  get { return HaystackReContinued.API.IsVisible(); } }
+
         static public void ButtonClick()
         {
             if (HaystackAvailable)

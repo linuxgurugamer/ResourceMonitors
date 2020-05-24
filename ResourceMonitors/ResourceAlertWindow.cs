@@ -10,7 +10,7 @@ using KSP.UI.Screens;
 
 using ClickThroughFix;
 using ToolbarControl_NS;
-
+using Vectrosity;
 
 namespace ResourceMonitors
 {
@@ -64,8 +64,11 @@ namespace ResourceMonitors
                 soundplayer.Initialize("selection");
             }
             GameEvents.onVesselChange.Add(onVesselChange);
+            GameEvents.OnGameSettingsApplied.Add(OnGameSettingsApplied);
 
-            Log.Info("windowPosition: " + windowPosition.ToString());
+            GameEvents.onGamePause.Add(onGamePause);
+            GameEvents.onGameUnpause.Add(onGameUnpause);
+
         }
         void onVesselChange(Vessel to)
         {
@@ -74,6 +77,15 @@ namespace ResourceMonitors
             Get_AlertMonitorsModule(to);
         }
 
+        void OnGameSettingsApplied()
+        {
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_3>().resetCommon)
+            {
+                Scenario_Module.ResetDefaultRMD();
+                HighLogic.CurrentGame.Parameters.CustomParams<RM_3>().resetCommon = false;
+                ScreenMessages.PostScreenMessage("Common Resource Monitors have been reset to the default settings", 15);
+            }
+        }
 
 
         internal static List<ResourceMonitorDef> workingRMD;
@@ -168,30 +180,32 @@ namespace ResourceMonitors
         void SaveSettings()
         {
         }
+        public static bool gamePaused;
+
+        private void onGamePause()
+        {
+            gamePaused = true;
+        }
+        private void onGameUnpause()
+        {
+            gamePaused = false;
+        }
 
         float previewWidth = 0;
         private void OnGUI()
         {
+            if (gamePaused && HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().hideWhenPaused)
+                return;
+
             if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
             {
                 GUI.skin = HighLogic.Skin;
-                // windowPosition.width = Main.WIDTH - 15;
-                previewWidth = 60;
-            }
-            else
-            {
-                //windowPosition.width = Main.WIDTH;
-                previewWidth = 70;
             }
             if (!Main.skinInitialized)
                 Main.InitStyles();
             if (visible)
             {
-                windowPosition = ClickThruBlocker.GUILayoutWindow(1987432520, windowPosition, ShowResourceGUIWindow, "Resource Monitors");
-                //Log.Info("windowPosition: " + windowPosition + ",  Main.WIDTH: " + Main.WIDTH);
-                //if (HighLogic.CurrentGame.Parameters.CustomParams<AlertMonitor>().altSkin)
-                //    windowPosition.width = Main.WIDTH + 60;
-                //else
+                windowPosition = ClickThruBlocker.GUILayoutWindow(1987432520, windowPosition, ShowResourceGUIWindow, HighLogic.LoadedSceneIsFlight ? "Vessel Resource Monitors" : "Common Resource Monitors");
                 windowPosition.width = Main.WIDTH + 40;
             }
             if (visible && soundSelectionWindow)
@@ -224,9 +238,11 @@ namespace ResourceMonitors
 
         void ShowResourceGUIWindow(int windowId)
         {
-                Main.WIDTH = 543;
+            Main.WIDTH = 543;
+            previewWidth = 70;
+
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
-                Main.WIDTH -= 20;
+                Main.WIDTH -= 10;
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
                 Main.WIDTH -= 20;
 
@@ -274,23 +290,29 @@ namespace ResourceMonitors
             Main.textFieldStyle.normal.textColor = Color.green;
             if (HighLogic.LoadedSceneIsFlight)
             {
-                if (HaystackWrapper.HaystackAvailable)
+                if (HaystackWrapper.HaystackAvailable && HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().useHaystackIfAvailable)
                 {
                     GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
-
-                    if (GUILayout.Button("Haystack", btnStyle))
+                   // GUILayout.FlexibleSpace();
+                    if (GUILayout.Button("Haystack", btnStyle, GUILayout.Width(120)))
                     {
                         HaystackWrapper.ButtonClick();
                     }
-                    if (GUILayout.Button("Get Vessel From Haystack", btnStyle))
+                    GUILayout.FlexibleSpace();
+                    if (HaystackWrapper.IsVisible)
                     {
-                        Log.Info("GetVesselFromHaystack");
-                        if (HaystackWrapper.SelectedVessel != null)
+                        GUILayout.FlexibleSpace();
+                        if (GUILayout.Button("Get Vessel From Haystack", btnStyle, GUILayout.Width(240)))
                         {
-                            Log.Info("Vessel name: " + HaystackWrapper.SelectedVessel.vesselName);
-                            JumpAndBackup.JumpToVessel(HaystackWrapper.SelectedVessel);
+                            Log.Info("GetVesselFromHaystack");
+                            if (HaystackWrapper.SelectedVessel != null)
+                            {
+                                Log.Info("Vessel name: " + HaystackWrapper.SelectedVessel.vesselName);
+                                JumpAndBackup.JumpToVessel(HaystackWrapper.SelectedVessel);
+                            }
                         }
                     }
+                    //GUILayout.FlexibleSpace();
                     GUILayout.EndHorizontal();
                 }
             }
@@ -301,14 +323,15 @@ namespace ResourceMonitors
                 GUILayout.Label("Common Resource Monitor Definition");
                 GUILayout.FlexibleSpace();
                 GUILayout.EndHorizontal();
-                var b = GUILayout.Toggle(Main.common, "Only allow common resources for new monitors", toggleStyle);
-                if (b != Main.common)
-                {
-                    Main.common = b;
-                    GetResourceList();
-                }
             }
-
+            GUILayout.BeginHorizontal();
+            var b = GUILayout.Toggle(Main.common, "Only allow common resources for new monitors", toggleStyle);
+            if (b != Main.common)
+            {
+                Main.common = b;
+                GetResourceList();
+            }
+            GUILayout.EndHorizontal();
             GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
             GUILayout.FlexibleSpace();
             if (GUILayout.Button("Add Resource Monitor", btnStyle))
@@ -578,6 +601,9 @@ namespace ResourceMonitors
             toolbarControl.OnDestroy();
             Destroy(toolbarControl);
             GameEvents.onVesselChange.Remove(onVesselChange);
+            GameEvents.OnGameSettingsApplied.Remove(OnGameSettingsApplied);
+            GameEvents.onGamePause.Remove(onGamePause);
+            GameEvents.onGameUnpause.Remove(onGameUnpause);
 
 
             SaveSettings();

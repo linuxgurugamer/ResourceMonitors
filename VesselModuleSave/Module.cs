@@ -1,4 +1,12 @@
-﻿using System;
+﻿/*
+ * VesselModuleSave us authored by Diazo
+ * Released under the GPL3 license
+ * 
+ * Original source:  https://github.com/SirDiazo/VesselModuleSave
+ * Forum link: https://forum.kerbalspaceprogram.com/index.php?/topic/114414-104-vesselmodule-class-data-persistence/&tab=comments#comment-2030477
+ */
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;

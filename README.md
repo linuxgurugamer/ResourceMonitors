@@ -3,3 +3,21 @@ This mod will allow you to set monitors on any resource in any/all vessels in th
 Optionally this will interface with the Haystack Continued mod, if it is installed.
 
 The following windows are used to set up and configure the alerts.
+
+Resource Monitor
+	There are two variants of this window, the Common Resource Monitors, used on the SpaceCenter screen, and the Vessel Resource Monitors, used in the Flight scene.
+	The Common Resource Monitors are a set of monitors that you can set up, to either be applied automatically to all new vessels, or applied manually when first setting up a vessel which doesn't have any monitors set up.
+	The Vessel Resource Monitors window is used to configure monitors for the currently active vessel.
+	The only difference between these windows is in the top part.  
+	The Vessel Resource Monitor can interface with the Haystack mod, to allow you to find a vessel and then to get a vessel from Haystack.
+
+	
+	Both windows have a toggle to only allow common resources for new monitors.  Common resources are defined in a config file, and can be modified by a player at any time, and the changes will be available the next time the game starts.  The file is called Defaults.cfg, and stores two different types of information.
+	The first is the list of common resources, the default common resources are:
+			ElectricCharge
+			LiquidFuel
+			Oxidizer
+			MonoPropellant
+			XenonGas
+
+	The second is a set of default monitors.  These monitor definitions are normally only used the first time a game is loaded, after a game is loaded those definitions are ignored.  However, there is an option on the Settings page to reload them.
