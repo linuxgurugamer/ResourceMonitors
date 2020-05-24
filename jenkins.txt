@@ -32,6 +32,7 @@
 
 # 2:PROJNAME, PROJFILE, VERSIONFILE, PLUGINSFOLDER
 2:ResourceMonitors,ResourceMonitors/ResourceMonitors.csproj,ResourceMonitors.version,GameData/ResourceMonitors/Plugins
+2:VesselModuleSave,VesselModuleSave/VesselModuleSave.csproj,ResourceMonitors.version,GameData/ResourceMonitors/Plugins
 
 # 3:SOURCEFILE, DESTDIR
 3:ResourceMonitors.version,GameData/ResourceMonitors
