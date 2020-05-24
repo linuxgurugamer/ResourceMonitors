@@ -40,9 +40,9 @@
     <Reference Include="ClickThroughBlocker">
       <HintPath>R:\KSP_1.8.1_dev\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
     </Reference>
-    <Reference Include="HaystackContinued, Version=0.5.6.4, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="HaystackContinued, Version=0.5.6.6, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>R:\KSP_1.9.1_dev\GameData\HaystackContinued\Plugins\HaystackContinued.dll</HintPath>
+      <HintPath>R:\KSP_1.8.1_dev\GameData\HaystackContinued\Plugins\HaystackContinued.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
