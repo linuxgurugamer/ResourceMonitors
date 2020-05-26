@@ -61,7 +61,9 @@ namespace ResourceMonitors
         internal bool SetResource(string resname)
         {
             this.resname = resname;
+            Log.Info("SetResource, rename: " + resname);
             this.prd = PartResourceLibrary.Instance.GetDefinition(resname);
+
             return (prd != null);
         }
 

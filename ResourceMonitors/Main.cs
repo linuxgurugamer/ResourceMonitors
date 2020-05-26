@@ -11,7 +11,7 @@ using UnityEngine.UI;
 
 namespace ResourceMonitors
 {
-    [KSPAddon(KSPAddon.Startup.Instantly, true)]
+    [KSPAddon(KSPAddon.Startup.MainMenu, true)]
     public class Main : MonoBehaviour
     {
         internal static string modDir;
@@ -47,10 +47,10 @@ namespace ResourceMonitors
         internal static int WIDTH = 50;
         internal const int HEIGHT = 300;
 
-        internal const int SOUND_WIDTH = 120;
+        internal const int SEL_WIN_WIDTH = 230;
 
         internal static bool common = true;
-        internal static string[] commonResources = new string[] { "ElectricCharge", "LiquidFuel", "Oxidizer", "MonoPropellant", "XenonGas" };
+        internal static string[] commonResources = null; // = new string[] { "ElectricCharge", "LiquidFuel", "Oxidizer", "MonoPropellant", "XenonGas" };
 
         //
         // GUI stuff here
@@ -68,6 +68,9 @@ namespace ResourceMonitors
         internal static GUIStyle textFieldCompactStyle;
         internal static GUIStyle horSliderStyle, horSliderCompactStyle;
         internal static GUIStyle thumbStyle, thumbCompactStyle;
+
+        internal static GUIStyle lStyle = null;
+        internal static GUIStyle lCompactStyle = null;
 
         static internal bool skinInitialized = false;
 
@@ -126,6 +129,10 @@ namespace ResourceMonitors
             textFieldCompactStyle.fixedHeight = 16;
             textFieldCompactStyle.fontSize = compactFontSize;
 
+            lStyle = new GUIStyle(labelStyle);
+            lCompactStyle = new GUIStyle(labelStyle);
+            lCompactStyle.fixedHeight = 16;
+            lCompactStyle.fontSize = compactFontSize;
             Main.skinInitialized = true;
 
         }
@@ -217,11 +224,14 @@ namespace ResourceMonitors
                     ResourceMonitorDef defaultResource = new ResourceMonitorDef();
 
                     resNode.TryGetValue(VAL_RESNAME, ref defaultResource.resname);
+                    if (!defaultResource.SetResource(defaultResource.resname))
+                        Log.Error("defaultResource.resname ("+defaultResource.resname + ") not set correctly");
                     resNode.TryGetValue(VAL_MONITOR, ref defaultResource.monitorByPercentage);
                     resNode.TryGetValue(VAL_PERCENT, ref defaultResource.percentage);
                     resNode.TryGetValue(VAL_AMT, ref defaultResource.minAmt);
                     resNode.TryGetValue(VAL_ALARM, ref defaultResource.alarm);
                     resNode.TryGetValue(VAL_ENABLED, ref defaultResource.Enabled);
+
                     initialDefaultRMD.Add(defaultResource);
 
                     Log.Info("Default resource loaded: " + defaultResource.resname);

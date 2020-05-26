@@ -11,6 +11,7 @@ using KSP.UI.Screens;
 using ClickThroughFix;
 using ToolbarControl_NS;
 using Vectrosity;
+using System.Reflection.Emit;
 
 namespace ResourceMonitors
 {
@@ -28,9 +29,9 @@ namespace ResourceMonitors
         ToolbarControl toolbarControl = null;
 
         internal static Rect windowPosition = new Rect(Screen.width / 2 - Main.WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.WIDTH, Main.HEIGHT);
-        internal static Rect soundWindowPosition = new Rect(Screen.width / 2 - Main.SOUND_WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.SOUND_WIDTH, Main.HEIGHT);
+        internal static Rect soundWindowPosition = new Rect(Screen.width / 2 - Main.SEL_WIN_WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.SEL_WIN_WIDTH, Main.HEIGHT);
 
-        internal static Rect resourceWindowPosition = new Rect(Screen.width / 2 - Main.SOUND_WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.SOUND_WIDTH, Main.HEIGHT);
+        internal static Rect resourceWindowPosition = new Rect(Screen.width / 2 - Main.SEL_WIN_WIDTH / 2, Screen.height / 2 - Main.HEIGHT / 2, Main.SEL_WIN_WIDTH, Main.HEIGHT);
 
 
 
@@ -101,7 +102,6 @@ namespace ResourceMonitors
                     workingRMD = FlightGlobals.ActiveVessel.GetComponent<AlertMonitors_Module>().rmdList;
                 else
                     workingRMD = null;
-                //Log.Info("GuiOn, vessel: " + FlightGlobals.ActiveVessel.vesselName + ",  rmdList.Count: " + workingRMD.Count);
                 Get_AlertMonitorsModule();
             }
             else
@@ -202,15 +202,38 @@ namespace ResourceMonitors
                 GUI.skin = HighLogic.Skin;
             }
             if (!Main.skinInitialized)
+            {
                 Main.InitStyles();
+            }
             if (visible)
             {
+                if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
+                {
+                    btnStyle = Main.btnCompactStyle;
+                    toggleStyle = Main.toggleCompactStyle;
+                    redBtnStyle = Main.redButtonCompactStyle;
+                    textFieldStyle = Main.textFieldCompactStyle;
+                    horSliderStyle = Main.horSliderCompactStyle;
+                    thumbStyle = Main.thumbCompactStyle;
+                    labelStyle = Main.labelCompactStyle;
+                }
+                else
+                {
+                    btnStyle = GUI.skin.button;
+                    toggleStyle = GUI.skin.toggle;
+                    redBtnStyle = Main.redButtonStyle;
+                    textFieldStyle = Main.textFieldStyle;
+                    horSliderStyle = Main.horSliderStyle;
+                    thumbStyle = Main.thumbStyle;
+                    labelStyle = Main.labelStyle;
+                }
+
                 windowPosition = ClickThruBlocker.GUILayoutWindow(1987432520, windowPosition, ShowResourceGUIWindow, HighLogic.LoadedSceneIsFlight ? "Vessel Resource Monitors" : "Common Resource Monitors");
-                windowPosition.width = Main.WIDTH + 40;
+                //windowPosition.width = Main.WIDTH + 40;
             }
             if (visible && soundSelectionWindow)
             {
-                soundWindowPosition = ClickThruBlocker.GUILayoutWindow(12345098, soundWindowPosition, SoundSelectionWindow, "Sound Selection");
+                soundWindowPosition = ClickThruBlocker.GUILayoutWindow(19345098, soundWindowPosition, SoundSelectionWindow, "Sound Selection");
             }
             if (visible && resourceSelectionWindow)
             {
@@ -224,13 +247,16 @@ namespace ResourceMonitors
         Vector2 resourceSelScrollVector;
         string lastSelectedSoundFile = "";
         string lastSelectedResource = "";
-        bool previewEnabled = false;
-
-
 
         Vector2 scrollPos;
         ResourceMonitorDef resourceAlert;
-
+        GUIStyle btnStyle = null;
+        GUIStyle toggleStyle = null;
+        GUIStyle redBtnStyle = null;
+        GUIStyle textFieldStyle = null;
+        GUIStyle horSliderStyle = null;
+        GUIStyle thumbStyle = null;
+        GUIStyle labelStyle = null;
 
         ResourceMonitorDef toDel = null;
 
@@ -238,53 +264,27 @@ namespace ResourceMonitors
 
         void ShowResourceGUIWindow(int windowId)
         {
-            Main.WIDTH = 543;
+            Main.WIDTH = 583;
             previewWidth = 70;
 
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
                 Main.WIDTH -= 10;
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
-                Main.WIDTH -= 20;
+                //&& HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin) 
+                Main.WIDTH -= 10;
 
-            int resourceWidth = 0;
+            int resourceWidth = 120;
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsOnly)
             {
-                Main.WIDTH -= 40;
-                resourceWidth = -40;
+                resourceWidth = 38;
+                Main.WIDTH -= (120 - 38);
             }
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsAndText)
             {
                 Main.WIDTH += 40;
-                resourceWidth = 40;
+                resourceWidth += 40;
             }
 
-            GUIStyle btnStyle = null;
-            GUIStyle toggleStyle = null;
-            GUIStyle redBtnStyle = null;
-            GUIStyle textFieldStyle = null;
-            GUIStyle horSliderStyle = null;
-            GUIStyle thumbStyle = null;
-            GUIStyle labelStyle = null;
-            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
-            {
-                btnStyle = Main.btnCompactStyle;
-                toggleStyle = Main.toggleCompactStyle;
-                redBtnStyle = Main.redButtonCompactStyle;
-                textFieldStyle = Main.textFieldCompactStyle;
-                horSliderStyle = Main.horSliderCompactStyle;
-                thumbStyle = Main.thumbCompactStyle;
-                labelStyle = Main.labelCompactStyle;
-            }
-            else
-            {
-                btnStyle = GUI.skin.button;
-                toggleStyle = GUI.skin.toggle;
-                redBtnStyle = Main.redButtonStyle;
-                textFieldStyle = Main.textFieldStyle;
-                horSliderStyle = Main.horSliderStyle;
-                thumbStyle = Main.thumbStyle;
-                labelStyle = Main.labelStyle;
-            }
 
             toDel = null;
             Main.textFieldStyle.normal.textColor = Color.green;
@@ -293,7 +293,7 @@ namespace ResourceMonitors
                 if (HaystackWrapper.HaystackAvailable && HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().useHaystackIfAvailable)
                 {
                     GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH));
-                   // GUILayout.FlexibleSpace();
+                                                 // GUILayout.FlexibleSpace();
                     if (GUILayout.Button("Haystack", btnStyle, GUILayout.Width(120)))
                     {
                         HaystackWrapper.ButtonClick();
@@ -346,15 +346,7 @@ namespace ResourceMonitors
                 if (GUILayout.Button("Apply Common Resource Monitor Settings", btnStyle))
                 {
                     AddCommonResourceMonitors();
-#if false
-                    foreach (var r in Scenario_Module.defaultRMD)
-                    {
-                        if (resourceList.Contains(r.resname))
-                            workingRMD.Add(new ResourceMonitorDef(r));
-                    }
-#endif
                     resourceIndex = workingRMD.Count - 1; //sets index to last one
-
                 }
             }
             GUILayout.FlexibleSpace();
@@ -362,7 +354,10 @@ namespace ResourceMonitors
 
             GUILayout.BeginHorizontal();
             GUILayout.Space(25);
-            GUILayout.Label("Resource", GUILayout.Width(120));
+            if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsOnly)
+                GUILayout.Label("Res", GUILayout.Width(resourceWidth));
+            else
+                GUILayout.Label("Resource", GUILayout.Width(resourceWidth));
             GUILayout.Space(25);
             GUILayout.Label("Alarm Sound", GUILayout.Width(120));
 
@@ -370,14 +365,14 @@ namespace ResourceMonitors
             GUILayout.Space(30);
             GUILayout.Space(15);
 
-            GUILayout.Label("Amt or % "); // , GUILayout.Width(35));
+            GUILayout.Label("Amt or % ");
             //GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
 
 
 
-            GUILayout.BeginHorizontal(); // GUILayout.Width(Main.WIDTH)); // + 10));
+            GUILayout.BeginHorizontal(); 
             scrollPos = GUILayout.BeginScrollView(scrollPos, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Width(Main.WIDTH + 20));
 
             for (int i = 0; i < workingRMD.Count; i++)
@@ -418,7 +413,7 @@ namespace ResourceMonitors
                 }
 
 
-                if (GUILayout.Button(btn, btnStyle, GUILayout.Width(120)))
+                if (GUILayout.Button(btn, btnStyle, GUILayout.Width(resourceWidth)))
                 {
                     resourceSelectionWindow = !resourceSelectionWindow;
                     if (resourceSelectionWindow)
@@ -427,13 +422,13 @@ namespace ResourceMonitors
                     }
                 }
 
-                GUILayout.Space(20);
+                GUILayout.Space(10);
                 //                                                                            *
                 // ****************************************************************************
 
                 // ****************************************************************************
                 //                                                                            *
-                if (GUILayout.Button(resourceAlert.alarm, btnStyle, GUILayout.Width(90 + resourceWidth)))
+                if (GUILayout.Button(resourceAlert.alarm, btnStyle, GUILayout.Width(120)))
                 {
                     soundSelectionWindow = !soundSelectionWindow;
                     if (soundSelectionWindow)
@@ -446,7 +441,7 @@ namespace ResourceMonitors
                 //                                                                            *
                 // ****************************************************************************
                 var newMonitorByPercentage = GUILayout.Toggle(resourceAlert.monitorByPercentage, "", toggleStyle, GUILayout.Width(30));
-                GUILayout.Label("%", labelStyle, GUILayout.Width(20));
+                //GUILayout.Label("%", labelStyle, GUILayout.Width(20));
                 if (newMonitorByPercentage)
                 {
                     if (HighLogic.LoadedSceneIsFlight && !resourceAlert.monitorByPercentage)
@@ -464,10 +459,14 @@ namespace ResourceMonitors
 
                     f = GUILayout.HorizontalSlider(f, 1f, 99f, horSliderStyle, thumbStyle, GUILayout.Width(100));
                     resourceAlert.percentage = (int)f;
+                    string p = f.ToString("F0") + "%";
+                    GUILayout.Label(p, GUILayout.Width(30));
                 }
                 else
                 {
-                    GUILayout.Space(10);
+                    var labelStyleAmt = new GUIStyle(labelStyle);
+                    labelStyleAmt.alignment = TextAnchor.MiddleRight;
+                    GUILayout.Label("Amt:", labelStyleAmt,  GUILayout.Width(40));
                     if (HighLogic.LoadedSceneIsFlight && resourceAlert.monitorByPercentage)
                     {
                         if (!newMonitorByPercentage && resourceAlert.percentage > 0 && resourceAlert.minAmt == 0)

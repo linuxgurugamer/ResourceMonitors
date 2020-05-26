@@ -8,7 +8,7 @@ namespace ResourceMonitors
     [KSPScenario(ScenarioCreationOptions.AddToAllGames, GameScenes.EDITOR, GameScenes.FLIGHT, GameScenes.TRACKSTATION, GameScenes.SPACECENTER)]
     class Scenario_Module : ScenarioModule
     {
-        
+
         internal static List<ResourceMonitorDef> defaultRMD = new List<ResourceMonitorDef>();
 
         const string X = "x";
@@ -17,6 +17,9 @@ namespace ResourceMonitors
         const string soundX = "soundx";
         const string soundY = "soundy";
 
+        const string resourceX = "resourceX";
+        const string resourceY = "resourceY";
+
 
         public override void OnSave(ConfigNode node)
         {
@@ -24,15 +27,15 @@ namespace ResourceMonitors
             {
                 double time = DateTime.Now.Ticks;
 
-                ConfigNode alertMonitorsNode = new ConfigNode(Main.MODNAME);
+                ConfigNode resourceMonitorsNode = new ConfigNode(Main.MODNAME);
 
                 foreach (var rmd in defaultRMD)
                 {
                     var configNode = rmd.ToConfigNode();
-                    alertMonitorsNode.AddNode(Main.RESNODE, configNode);
+                    resourceMonitorsNode.AddNode(Main.RESNODE, configNode);
                 }
 
-                node.AddNode(alertMonitorsNode);
+                node.AddNode(resourceMonitorsNode);
 
                 ConfigNode guiSettings = new ConfigNode(Main.GUIName);
                 guiSettings.AddValue(X, ResourceAlertWindow.windowPosition.x);
@@ -41,8 +44,11 @@ namespace ResourceMonitors
                 guiSettings.AddValue(soundX, ResourceAlertWindow.soundWindowPosition.x);
                 guiSettings.AddValue(soundY, ResourceAlertWindow.soundWindowPosition.y);
 
+                guiSettings.AddValue(resourceX, ResourceAlertWindow.resourceWindowPosition.x);
+                guiSettings.AddValue(resourceY, ResourceAlertWindow.resourceWindowPosition.y);
 
-                
+
+
                 node.AddNode(guiSettings);
 
                 time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
@@ -59,12 +65,12 @@ namespace ResourceMonitors
             try
             {
                 defaultRMD.Clear();
-                ConfigNode alertMonitorsNode = null;
-                if (node.TryGetNode(Main.MODNAME, ref alertMonitorsNode))
+                ConfigNode resourceMonitorsNode = null;
+                if (node.TryGetNode(Main.MODNAME, ref resourceMonitorsNode))
                 {
                     double time = DateTime.Now.Ticks;
 
-                    var nodes = alertMonitorsNode.GetNodes(Main.RESNODE);
+                    var nodes = resourceMonitorsNode.GetNodes(Main.RESNODE);
                     if (nodes != null)
                     {
                         foreach (var configNode in nodes)
@@ -73,26 +79,42 @@ namespace ResourceMonitors
                             defaultRMD.Add(rmd);
                         }
                     }
-                    if (node.TryGetNode(Main.GUIName, ref alertMonitorsNode))
+                    if (node.TryGetNode(Main.GUIName, ref resourceMonitorsNode))
                     {
-                        if (alertMonitorsNode.HasValue(X))
-                            ResourceAlertWindow.windowPosition.x = (float)Double.Parse(alertMonitorsNode.GetValue(X));
-                        if (alertMonitorsNode.HasValue(Y))
-                            ResourceAlertWindow.windowPosition.y = (float)Double.Parse(alertMonitorsNode.GetValue(Y));
+                        if (resourceMonitorsNode.HasValue(X))
+                            ResourceAlertWindow.windowPosition.x = (float)Double.Parse(resourceMonitorsNode.GetValue(X));
+                        if (resourceMonitorsNode.HasValue(Y))
+                            ResourceAlertWindow.windowPosition.y = (float)Double.Parse(resourceMonitorsNode.GetValue(Y));
 
-                        if (alertMonitorsNode.HasValue(soundX))
-                            ResourceAlertWindow.soundWindowPosition.x = (float)Double.Parse(alertMonitorsNode.GetValue(soundX));
-                        if (alertMonitorsNode.HasValue(soundY))
-                            ResourceAlertWindow.soundWindowPosition.y = (float)Double.Parse(alertMonitorsNode.GetValue(soundY));
-                        
+                        if (resourceMonitorsNode.HasValue(soundX))
+                            ResourceAlertWindow.soundWindowPosition.x = (float)Double.Parse(resourceMonitorsNode.GetValue(soundX));
+                        if (resourceMonitorsNode.HasValue(soundY))
+                            ResourceAlertWindow.soundWindowPosition.y = (float)Double.Parse(resourceMonitorsNode.GetValue(soundY));
+
+
+                        if (resourceMonitorsNode.HasValue(resourceX))
+                            ResourceAlertWindow.resourceWindowPosition.x = (float)Double.Parse(resourceMonitorsNode.GetValue(resourceX));
+                        if (resourceMonitorsNode.HasValue(resourceY))
+                            ResourceAlertWindow.resourceWindowPosition.y = (float)Double.Parse(resourceMonitorsNode.GetValue(resourceY));
+
+
 
                         ResourceAlertWindow.windowPosition.height = Main.HEIGHT;
                         ResourceAlertWindow.windowPosition.width = Main.WIDTH;
+
+                        ResourceAlertWindow.soundWindowPosition.height = Main.HEIGHT;
+                        ResourceAlertWindow.soundWindowPosition.width = Main.SEL_WIN_WIDTH;
+
+                        ResourceAlertWindow.resourceWindowPosition.height = Main.HEIGHT;
+                        ResourceAlertWindow.resourceWindowPosition.width = Main.SEL_WIN_WIDTH;
+
+
                     }
 
                     time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
                     Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
-                } else
+                }
+                else
                 {
                     ResetDefaultRMD();
                 }
@@ -105,7 +127,13 @@ namespace ResourceMonitors
 
         public static void ResetDefaultRMD()
         {
-            defaultRMD = Main.initialDefaultRMD;
+            if (defaultRMD == null)
+                defaultRMD = new List<ResourceMonitorDef>();
+            else
+                defaultRMD.Clear();
+            if (Main.initialDefaultRMD != null)
+                foreach (var a in Main.initialDefaultRMD)
+                    defaultRMD.Add(new ResourceMonitorDef(a));
         }
     }
 }

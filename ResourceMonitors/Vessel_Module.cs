@@ -165,7 +165,7 @@ namespace ResourceMonitors
                 if (!Paused)
                 {
                     for (int i = 0; i < rmdList.Count; i++)
-                    {
+                    {                        
                         rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
                         bool lowResource = false;
 
@@ -173,6 +173,7 @@ namespace ResourceMonitors
                         {
                             if (rmdList[i].monitorByPercentage &&  rmdList[i].percentage > 0 && cur / max <= rmdList[i].percentage / 100f)
                                 lowResource = true;
+
                             if (!rmdList[i].monitorByPercentage && rmdList[i].minAmt > 0 && cur <= rmdList[i].minAmt)
                                 lowResource = true;
                             if (lowResource && soundActive)

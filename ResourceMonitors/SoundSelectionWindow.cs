@@ -17,14 +17,9 @@ namespace ResourceMonitors
     {
         void SoundSelectionWindow(int id)
         {
-            //GUIStyle Main.toggleStyle = new GUIStyle(GUI.skin.label);
-
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Sound Selection");
             GUILayout.FlexibleSpace();
-            previewEnabled = GUILayout.Toggle(previewEnabled, "Preview Enabled");
-            if (!previewEnabled && soundplayer.SoundPlaying())
-                soundplayer.StopSound();
+            GUILayout.Label("(click button for preview)");
             GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
 
@@ -36,24 +31,31 @@ namespace ResourceMonitors
                 string fileName = d;
 
                 GUILayout.BeginHorizontal();
-                {
-                    if (lastSelectedSoundFile != fileName)
-                        Main.labelStyle.normal.textColor = Color.red;
-                    else
-                        Main.labelStyle.normal.textColor = Color.green;
-                }
-                GUILayout.Space(60);
-                if (GUILayout.Button(fileName, Main.labelStyle))
-                {
-
+                bool b = (lastSelectedSoundFile == fileName);
+                bool newB = GUILayout.Toggle(b, "", toggleStyle);
+                if (newB)
                     lastSelectedSoundFile = fileName;
-                    if (previewEnabled)
-                    {
-                        soundplayer.LoadNewSound(Main.SOUND_DIR + lastSelectedSoundFile, true);
-                        soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
-                        soundplayer.PlaySound(); //Plays sound
 
-                    }
+                if (lastSelectedSoundFile == fileName)
+                {
+                    Main.lStyle.normal.textColor = Color.green;
+                    Main.lCompactStyle.normal.textColor = Color.green;
+                }
+                else
+                {
+                    Main.lStyle.normal.textColor = labelStyle.normal.textColor;
+                    Main.lCompactStyle.normal.textColor = labelStyle.normal.textColor;
+                }
+
+
+                GUILayout.Label(fileName, HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact ? Main.lCompactStyle : Main.lStyle, GUILayout.Width(120));
+                if (GUILayout.Button("►", btnStyle, GUILayout.Width(25)))
+                {
+                    
+                        soundplayer.LoadNewSound(Main.SOUND_DIR + fileName, true);
+                        soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().previewVolume);
+                        soundplayer.PlaySound(); //Plays sound
+                    
                 }
                 cnt++;
                 GUILayout.EndHorizontal();
@@ -62,10 +64,8 @@ namespace ResourceMonitors
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            //GUILayout.FlexibleSpace();
-            GUILayout.Space(10);
+            GUILayout.FlexibleSpace();
 
-            GUILayout.Space(10);
             if (GUILayout.Button("OK", GUILayout.Width(90)))
             {
                 resourceAlert.alarm = lastSelectedSoundFile;
@@ -73,8 +73,7 @@ namespace ResourceMonitors
                 if (soundplayer.SoundPlaying())
                     soundplayer.StopSound();
             }
-            //GUILayout.FlexibleSpace();
-            GUILayout.Space(10);
+            GUILayout.FlexibleSpace();
             if (GUILayout.Button("Cancel", GUILayout.Width(90)))
             {
                 soundSelectionWindow = false;
@@ -82,6 +81,7 @@ namespace ResourceMonitors
                     soundplayer.StopSound();
 
             }
+            GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
             GUI.DragWindow();
         }

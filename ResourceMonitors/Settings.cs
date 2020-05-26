@@ -83,6 +83,13 @@ namespace ResourceMonitors
             set { masterVol = value / 100.0f; }
         }
 
+        float previewVol = 0.20f;
+        [GameParameters.CustomFloatParameterUI("Preview Volume (%)", displayFormat = "N0", minValue = 0, maxValue = 100, stepCount = 1, asPercentage = false)]
+        public float previewVolume
+        {
+            get { return previewVol * 100; }
+            set { previewVol = value / 100.0f; }
+        }
 
 
         [GameParameters.CustomParameterUI("Alternate skin")]
