@@ -199,7 +199,7 @@ namespace ResourceMonitors
 
             if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
             {
-                GUI.skin = HighLogic.Skin;
+                GUI.skin = HighLogic.Skin;                
             }
             if (!Main.skinInitialized)
             {
@@ -261,7 +261,7 @@ namespace ResourceMonitors
         ResourceMonitorDef toDel = null;
 
         int previewSound = 0;
-
+        float oldWidth = 0;
         void ShowResourceGUIWindow(int windowId)
         {
             Main.WIDTH = 583;
@@ -270,22 +270,25 @@ namespace ResourceMonitors
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
                 Main.WIDTH -= 10;
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().compact)
-                //&& HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin) 
                 Main.WIDTH -= 10;
 
             int resourceWidth = 120;
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsOnly)
             {
                 resourceWidth = 38;
-                Main.WIDTH -= (120 - 38);
+                Main.WIDTH =Main.WIDTH- 120+38; // (120 - 38) ;
             }
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsAndText)
             {
                 Main.WIDTH += 40;
                 resourceWidth += 40;
             }
-
-
+            // Following to avoid flickering when moving the window with certain options specified
+            if (Main.WIDTH + 40 != oldWidth)
+            {
+                oldWidth = Main.WIDTH + 40;
+                ResourceAlertWindow.windowPosition.width = oldWidth;
+            }
             toDel = null;
             Main.textFieldStyle.normal.textColor = Color.green;
             if (HighLogic.LoadedSceneIsFlight)

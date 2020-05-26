@@ -94,6 +94,7 @@ namespace ResourceMonitors
             btnCompactStyle.padding = new RectOffset(0, 0, 0, 0);
             btnCompactStyle.margin = new RectOffset(0, 0, 0, 0);
             btnCompactStyle.overflow = new RectOffset(0, 0, 0, 0);
+
             //btnCompactStyle.imagePosition = ImagePosition.ImageOnly;
             //btnCompactStyle.border = new RectOffset(0, 0, 0, 0);
             btnCompactStyle.fixedHeight = 16;
@@ -113,6 +114,7 @@ namespace ResourceMonitors
             //Log.Info("Thumb height: " + thumbStyle.fixedHeight + " - " + thumbStyle.stretchHeight);
             horSliderCompactStyle = new GUIStyle(GUI.skin.horizontalSlider);
             horSliderCompactStyle.fixedHeight = horSliderStyle.fixedHeight * 3/4;
+
             thumbCompactStyle = new GUIStyle(GUI.skin.horizontalScrollbarThumb);
             thumbCompactStyle.fixedHeight = thumbCompactStyle.fixedHeight * 3/4;
 
@@ -133,6 +135,8 @@ namespace ResourceMonitors
             lCompactStyle = new GUIStyle(labelStyle);
             lCompactStyle.fixedHeight = 16;
             lCompactStyle.fontSize = compactFontSize;
+
+            //ResourceAlertWindow.windowPosition = new Rect(ResourceAlertWindow.windowPosition.x, ResourceAlertWindow.windowPosition.y, WIDTH, HEIGHT);
             Main.skinInitialized = true;
 
         }
@@ -141,6 +145,11 @@ namespace ResourceMonitors
         {
             if (skinInitialized)
                 return;
+            if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
+            {
+                GUI.skin = HighLogic.Skin;
+            }
+
             InitStyles();
 
 

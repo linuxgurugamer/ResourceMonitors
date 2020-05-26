@@ -120,7 +120,7 @@ namespace ResourceMonitors
 
         bool oldUseTextOnly = false;
         bool oldUseIconsOnly = false;
-        bool olduseIconsAndText = false;
+        bool oldUseIconsAndText = false;
         bool oldCompact = false;
 
         public override bool Enabled(MemberInfo member, GameParameters parameters)
@@ -131,37 +131,43 @@ namespace ResourceMonitors
 
                 oldUseTextOnly = useTextOnly;
                 oldUseIconsOnly = useIconsOnly;
-                olduseIconsAndText = useIconsAndText;
+                oldUseIconsAndText = useIconsAndText;
                 oldCompact = compact;
                 initted = true;
+                Main.skinInitialized = true;
             }
-            Main.skinInitialized = (oldAltSkin == altSkin && oldCompact == compact);
+            //Main.skinInitialized = (oldAltSkin == altSkin && oldCompact == compact &&
+            //    useTextOnly == oldUseTextOnly && useIconsOnly == oldUseIconsOnly &&  useIconsAndText  == oldUseIconsAndText);
 
             if (useTextOnly && !oldUseTextOnly)
             {
                 oldUseTextOnly = true;
-                oldUseIconsOnly = olduseIconsAndText = false;
+                oldUseIconsOnly = oldUseIconsAndText = false;
                 useIconsOnly = useIconsAndText = false;
+                Main.skinInitialized = false;
             }
             else
             if (useIconsOnly && !oldUseIconsOnly)
             {
                 oldUseIconsOnly = true;
-                oldUseTextOnly = olduseIconsAndText = false;
+                oldUseTextOnly = oldUseIconsAndText = false;
                 useTextOnly = useIconsAndText = false;
+                Main.skinInitialized = false;
             }
             else
-            if (useIconsAndText && !olduseIconsAndText)
+            if (useIconsAndText && !oldUseIconsAndText)
             {
-                olduseIconsAndText = true;
+                oldUseIconsAndText = true;
                 oldUseTextOnly = oldUseIconsOnly = false;
                 useTextOnly = useIconsOnly = false;
+                Main.skinInitialized = false;
             }
             if (!useTextOnly && !useIconsOnly && !useIconsAndText)
             {
                 useTextOnly = oldUseIconsOnly;
-                useIconsAndText = olduseIconsAndText;
+                useIconsAndText = oldUseIconsAndText;
                 useIconsOnly = oldUseIconsOnly;
+                Main.skinInitialized = false;
             }
 
             return true; //otherwise return true
