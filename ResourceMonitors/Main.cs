@@ -145,6 +145,8 @@ namespace ResourceMonitors
         {
             if (skinInitialized)
                 return;
+            if (HighLogic.CurrentGame == null)
+                return;
             if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
             {
                 GUI.skin = HighLogic.Skin;

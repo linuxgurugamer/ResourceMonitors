@@ -1,5 +1,8 @@
 Changelog
 
+0.0.0.3
+	Fixed nullref when going to the main menu due to no game loaded
+
 0.0.0.2 
 	Fixed window not resizing properly when options changed
 
