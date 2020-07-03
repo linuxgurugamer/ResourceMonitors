@@ -54,7 +54,7 @@
     <Reference Include="ToolbarControl">
       <HintPath>R:\KSP_1.8.1_dev\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
     </Reference>
-    <Reference Include="VesselModuleSave, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VesselModuleSave, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\VesselModuleSave.dll</HintPath>
     </Reference>
