@@ -6,6 +6,7 @@ using System.Threading;
 using UnityEngine;
 using KSP;
 using System.ComponentModel.Design.Serialization;
+using KSP_Log;
 
 namespace ResourceMonitors
 {
@@ -35,7 +36,7 @@ namespace ResourceMonitors
             if (source.audio != null)
                 source.audio.volume = vol / 100;
             else
-                Log.Error("source.audio is null");
+                Main.Log.Error("source.audio is null");
         }
         public void StopSound()
         {
@@ -68,7 +69,7 @@ namespace ResourceMonitors
 #endif
                 loadedClip = GameDatabase.Instance.GetAudioClip(soundPath);
             if (loadedClip == null)
-                Log.Info("loadedClip is null");
+                Main.Log.Info("loadedClip is null");
         }
         public void Initialize(string soundPath)
         {
@@ -79,7 +80,7 @@ namespace ResourceMonitors
             source = new FXGroup(soundPath + "-alertmonitorplayer");
             source.audio = alertMonitorObject.AddComponent<AudioSource>();
             if (source.audio == null)
-                Log.Error("Unable to do alertMonitorPlayer.AddComponent<AudioSource> for: " + soundPath);
+                Main.Log.Error("Unable to do alertMonitorPlayer.AddComponent<AudioSource> for: " + soundPath);
 
             source.audio.volume = 0.5f;
             source.audio.spatialBlend = 0;

@@ -4,6 +4,7 @@ using VesselModuleSaveFramework;
 using System.Collections;
 using UnityEngine;
 using System.Linq;
+using KSP_Log;
 
 namespace ResourceMonitors
 {
@@ -17,20 +18,28 @@ namespace ResourceMonitors
         bool initted = false;
 
         bool NotA_Vessel { get { if (Vessel.vesselName.Length < 3) return false; return Vessel.vesselName.Substring(0, 3) == "Ast"; } }
+        bool NoCommand {  get { return (Vessel.FindPartModuleImplementing<ModuleCommand>() == null) ; } }
+
 
         public override void VSMStart()
         {
             if (NotA_Vessel)
                 return;
-            Log.Info("VSMStart, vessel: " + Vessel.name + ", vesselName: " + Vessel.vesselName);
+            if (NoCommand)
+                return;
 
-            Log.Info("Name from component: " + this.GetComponent<Vessel>().vesselName);
+            Main.Log.Info("VSMStart, vessel: " + Vessel.name + ", vesselName: " + Vessel.vesselName + ", vessel.missionTime: " + vessel.missionTime + ", vessel.launchTime: " + vessel.launchTime + ", Planetarium.time: " + Planetarium.fetch.time);
+            Main.Log.Info("Name from component: " + this.GetComponent<Vessel>().vesselName);
 
             GameEvents.onGamePause.Add(OnPause);
             GameEvents.onGameUnpause.Add(OnUnpause);
 
-            if (vessel.missionTime == 0)
+            if (vessel.missionTime == 0 && Vessel.isActiveVessel && HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().applyCommonToAll)
+            {
+                ResourceAlertWindow.fetch.GetResourceList(Vessel);
+
                 ResourceAlertWindow.AddCommonResourceMonitors();
+            }
             StartCoroutine(MonitorThread());
         }
 
@@ -68,7 +77,7 @@ namespace ResourceMonitors
             {
 
                 if (rmdList == null)
-                    Log.Info("rmdList is null, vessel: " + Vessel.name);
+                    Main.Log.Info("rmdList is null, vessel: " + Vessel.name);
 
                 for (int i = 0; i < rmdList.Count; i++)
                 {
@@ -101,12 +110,12 @@ namespace ResourceMonitors
                 //node.AddNode(alertMonitorsNode);
 
                 time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
-                Log.Info("saved ScenarioModule in " + time.ToString("0.000s"));
+                Main.Log.Info("saved ScenarioModule in " + time.ToString("0.000s"));
                 return alertMonitorsNode;
             }
             catch (Exception e)
             {
-                Log.Error("OnSave(): " + e.ToString());
+                Main.Log.Error("OnSave(): " + e.ToString());
             }
 
             return node;
@@ -117,18 +126,19 @@ namespace ResourceMonitors
             if (NotA_Vessel)
                 return;
 
-            rmdList.Clear();
+            if (!(vessel.missionTime == 0 && Vessel.isActiveVessel && HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().applyCommonToAll))
+                rmdList.Clear();
 
             if (!initted)
             {
-                rmdList.Add(new ResourceMonitorDef("ElectricCharge", "Alarm1", 5f, 1));
+               // rmdList.Add(new ResourceMonitorDef("ElectricCharge", "Alarm1", 5f, 1));
 
                 initted = true;
             }
 
             try
             {
-                Log.Info("VSMLoad, configNode: " + node.ToString());
+                Main.Log.Info("VSMLoad, configNode: " + node.ToString());
                 ConfigNode alertMonitorsNode = null;
                 alertMonitorsNode = node;
                     double time = DateTime.Now.Ticks;
@@ -136,7 +146,7 @@ namespace ResourceMonitors
                     var nodes = alertMonitorsNode.GetNodes(Main.RESNODE);
                     if (nodes != null)
                     {
-                        Log.Info("VSMLoad, nodes.Count: " + nodes.Count());
+                    Main.Log.Info("VSMLoad, nodes.Count: " + nodes.Count());
                         foreach (var configNode in nodes)
                         {
                             ResourceMonitorDef rmd = ResourceMonitorDef.FromConfigNode(configNode);
@@ -145,17 +155,18 @@ namespace ResourceMonitors
                     }
 
                     time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
-                    Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
+                Main.Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
             }
             catch (Exception e)
             {
-                Log.Error("[KRnD] OnLoad(): " + e.ToString());
+                Main.Log.Error("[KRnD] OnLoad(): " + e.ToString());
             }
 
         }
 
         IEnumerator MonitorThread()
         {
+            Main.Log.Info("MonitorThread");
             WaitForSeconds wfs = new WaitForSeconds(1f);
 
             while (true)

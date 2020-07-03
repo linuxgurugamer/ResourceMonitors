@@ -8,12 +8,18 @@ using System.IO;
 using ToolbarControl_NS;
 using Steamworks;
 using UnityEngine.UI;
+using KSP_Log;
+
 
 namespace ResourceMonitors
 {
+   
+
     [KSPAddon(KSPAddon.Startup.MainMenu, true)]
     public class Main : MonoBehaviour
     {
+        internal static KSP_Log.Log Log = new Log("ResourceMonitors");
+
         internal static string modDir;
         internal const string MODNAME = "ResourceMonitors";
         internal static string dataDir;
@@ -74,8 +80,13 @@ namespace ResourceMonitors
 
         static internal bool skinInitialized = false;
 
+        void Start()
+        {
+            Log.Info("Main.Start");
+        }
         internal static void InitStyles()
         {
+            Log.Info("Main.InitStyles");
             buttonStyle = new GUIStyle(GUI.skin.button);
             toggleStyle = new GUIStyle(GUI.skin.toggle);
             horSliderStyle = new GUIStyle(GUI.skin.horizontalSlider);
@@ -143,14 +154,15 @@ namespace ResourceMonitors
 
         void OnGUI()
         {
+            Log.Info("Main.OnGUI");
             if (skinInitialized)
                 return;
-            if (HighLogic.CurrentGame == null)
-                return;
-            if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
-            {
-                GUI.skin = HighLogic.Skin;
-            }
+            //if (HighLogic.CurrentGame == null)
+            //    return;
+            //if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
+            //{
+            //    GUI.skin = HighLogic.Skin;
+            //}
 
             InitStyles();
 
@@ -248,6 +260,7 @@ namespace ResourceMonitors
                     Log.Info("Default resource loaded: " + defaultResource.resname);
                 }
             }
+            Scenario_Module.ResetDefaultRMD();
             if (r.HasNode(DEF_COMMON_NODENAME))
             {
                 ConfigNode common = r.GetNode(DEF_COMMON_NODENAME);

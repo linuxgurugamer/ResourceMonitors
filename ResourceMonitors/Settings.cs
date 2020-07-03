@@ -50,7 +50,7 @@ namespace ResourceMonitors
                     toolTip = "Only useful when Haystack is installed, will snap the Haystack window to the right edge")]
         public bool snapHaystack = true;
 
-        [GameParameters.CustomParameterUI("Apply common resource monitors to all new vessels",
+        [GameParameters.CustomParameterUI("Apply common resource monitors to all new vessels at launch time",
             toolTip = "Only monitors for resources on the vessel will be added")]
         public bool applyCommonToAll = false;
 

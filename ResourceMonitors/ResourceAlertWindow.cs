@@ -12,6 +12,7 @@ using ClickThroughFix;
 using ToolbarControl_NS;
 using Vectrosity;
 using System.Reflection.Emit;
+using KSP_Log;
 
 namespace ResourceMonitors
 {
@@ -70,16 +71,19 @@ namespace ResourceMonitors
             GameEvents.onGamePause.Add(onGamePause);
             GameEvents.onGameUnpause.Add(onGameUnpause);
 
+            GameEvents.onShowUI.Add(ShowUI);
+            GameEvents.onHideUI.Add(HideUI);
         }
         void onVesselChange(Vessel to)
         {
-            Log.Info("onVesselChange: " + to.vesselName);
+            Main.Log.Info("GameEvent.onVesselChange: " + to.vesselName);
             GetResourceList(to);
             Get_AlertMonitorsModule(to);
         }
 
         void OnGameSettingsApplied()
         {
+            Main.Log.Info("GameEvent.OnGameSettingsApplied");
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_3>().resetCommon)
             {
                 Scenario_Module.ResetDefaultRMD();
@@ -147,7 +151,7 @@ namespace ResourceMonitors
         public void GetResourceList(Vessel to = null)
         {
             resourceList.Clear();
-            Log.Info("GetResourceList");
+            Main.Log.Info("GetResourceList");
             if (HighLogic.LoadedSceneIsFlight)
             {
                 if (to == null)
@@ -155,11 +159,11 @@ namespace ResourceMonitors
                 for (int i = 0; i < to.Parts.Count; i++)
                 {
                     Part p = to.Parts[i];
-                    Log.Info("Part: " + p.partInfo.title);
+                    Main.Log.Info("Part: " + p.partInfo.title);
                     for (int j = 0; j < p.Resources.Count; j++)
                     {
                         PartResource r = p.Resources[j];
-                        Log.Info("Part: " + p.partInfo.title + ", resource: " + r.info.name);
+                        Main.Log.Info("Part: " + p.partInfo.title + ", resource: " + r.info.name);
                         if (!resourceList.Contains(r.info.name))
                             resourceList.Add(r.info.name);
                     }
@@ -174,7 +178,7 @@ namespace ResourceMonitors
                         resourceList.Add(r.name);
                 }
             }
-            Log.Info("GetResourceList, total resources found: " + resourceList.Count);
+            Main.Log.Info("GetResourceList, total resources found: " + resourceList.Count);
         }
 
         void SaveSettings()
@@ -194,12 +198,12 @@ namespace ResourceMonitors
         float previewWidth = 0;
         private void OnGUI()
         {
-            if (gamePaused && HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().hideWhenPaused)
+            if (hideUI || (gamePaused && HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().hideWhenPaused))
                 return;
 
             if (!HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
             {
-                GUI.skin = HighLogic.Skin;                
+                GUI.skin = HighLogic.Skin;
             }
             if (!Main.skinInitialized)
             {
@@ -276,7 +280,7 @@ namespace ResourceMonitors
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsOnly)
             {
                 resourceWidth = 38;
-                Main.WIDTH =Main.WIDTH- 120+38; // (120 - 38) ;
+                Main.WIDTH = Main.WIDTH - 120 + 38; // (120 - 38) ;
             }
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().useIconsAndText)
             {
@@ -307,10 +311,10 @@ namespace ResourceMonitors
                         GUILayout.FlexibleSpace();
                         if (GUILayout.Button("Get Vessel From Haystack", btnStyle, GUILayout.Width(240)))
                         {
-                            Log.Info("GetVesselFromHaystack");
+                            Main.Log.Info("GetVesselFromHaystack");
                             if (HaystackWrapper.SelectedVessel != null)
                             {
-                                Log.Info("Vessel name: " + HaystackWrapper.SelectedVessel.vesselName);
+                                Main.Log.Info("Vessel name: " + HaystackWrapper.SelectedVessel.vesselName);
                                 JumpAndBackup.JumpToVessel(HaystackWrapper.SelectedVessel);
                             }
                         }
@@ -375,7 +379,7 @@ namespace ResourceMonitors
 
 
 
-            GUILayout.BeginHorizontal(); 
+            GUILayout.BeginHorizontal();
             scrollPos = GUILayout.BeginScrollView(scrollPos, GUIStyle.none, GUI.skin.verticalScrollbar, GUILayout.Width(Main.WIDTH + 20));
 
             for (int i = 0; i < workingRMD.Count; i++)
@@ -469,7 +473,7 @@ namespace ResourceMonitors
                 {
                     var labelStyleAmt = new GUIStyle(labelStyle);
                     labelStyleAmt.alignment = TextAnchor.MiddleRight;
-                    GUILayout.Label("Amt:", labelStyleAmt,  GUILayout.Width(40));
+                    GUILayout.Label("Amt:", labelStyleAmt, GUILayout.Width(40));
                     if (HighLogic.LoadedSceneIsFlight && resourceAlert.monitorByPercentage)
                     {
                         if (!newMonitorByPercentage && resourceAlert.percentage > 0 && resourceAlert.minAmt == 0)
@@ -502,7 +506,7 @@ namespace ResourceMonitors
                     if (GUILayout.Button("Preview", btnStyle, GUILayout.Width(previewWidth)))
                     {
                         previewSound = curResource;
-                        Log.Info("Preview: " + Main.SOUND_DIR + resourceAlert.alarm);
+                        Main.Log.Info("Preview: " + Main.SOUND_DIR + resourceAlert.alarm);
                         soundplayer.LoadNewSound(Main.SOUND_DIR + resourceAlert.alarm, HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().resourceAlertRepetition);
                         soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
 
@@ -555,12 +559,24 @@ namespace ResourceMonitors
 
         internal static void AddCommonResourceMonitors()
         {
+            if (workingRMD == null)
+                workingRMD = FlightGlobals.ActiveVessel.GetComponent<AlertMonitors_Module>().rmdList;
+
+            Main.Log.Info("AddCommonResourceMonitors, ResourceAlertWindow.fetch != null: " + (ResourceAlertWindow.fetch != null).ToString());
             if (ResourceAlertWindow.fetch != null)
             {
+                Main.Log.Info("AddCommonResourceMonitors, defaultRMD.Count: " + Scenario_Module.defaultRMD.Count + ", ResourceAlertWindow.fetch.resourceList: " + ResourceAlertWindow.fetch.resourceList.Count + ", workingRMD.Count: " + workingRMD.Count);
+
+                
                 foreach (var r in Scenario_Module.defaultRMD)
                 {
+                    Main.Log.Info("r.resname: " + r.resname);
                     if (ResourceAlertWindow.fetch.resourceList.Contains(r.resname))
-                        workingRMD.Add(new ResourceMonitorDef(r));
+                    {
+                        Main.Log.Info("Adding " + r.resname + " to workingRMD");
+                        //if (workingRMD.Where(w => w.resname == r.resname).Count() == 0)
+                            workingRMD.Add(new ResourceMonitorDef(r));
+                    }
                 }
             }
         }
@@ -597,9 +613,21 @@ namespace ResourceMonitors
             return windowPosition;
         }
 
+        bool hideUI;
+        private void ShowUI()
+        {
+            hideUI = false;
+        }
+        void HideUI()
+        {
+            hideUI = true;
+        }
+
+
+
         void OnDestroy()
         {
-            Log.Info("ResourceAlertWindow is being destroyed");
+            Main.Log.Info("ResourceAlertWindow is being destroyed");
             toolbarControl.OnDestroy();
             Destroy(toolbarControl);
             GameEvents.onVesselChange.Remove(onVesselChange);
@@ -607,6 +635,8 @@ namespace ResourceMonitors
             GameEvents.onGamePause.Remove(onGamePause);
             GameEvents.onGameUnpause.Remove(onGameUnpause);
 
+            GameEvents.onShowUI.Remove(ShowUI);
+            GameEvents.onHideUI.Remove(HideUI);
 
             SaveSettings();
         }

@@ -70,14 +70,14 @@ namespace ResourceMonitors
                 //}
                 else
                 {
-                    Log.Info("Not Switching - unable to backup saves");
+                    Main.Log.Info("Not Switching - unable to backup saves");
                     ShowBackupFailedWindow("Not Switching - unable to backup saves");
                     blnJumped = false;
                 }
             }
             else
             {
-                Log.Info("Switching in by Save");
+                Main.Log.Info("Switching in by Save");
 
                 int intVesselidx = getVesselIdx(vTarget);
                 if (intVesselidx < 0)
@@ -219,7 +219,7 @@ namespace ResourceMonitors
             String strMessageLine = String.Format("{0},{2},{1}",
                 DateTime.Now, Message,
                 _AssemblyName);                                           // This adds our standardised wrapper to each line
-            Log.Info(strMessageLine);                        // And this puts it in the log
+            Main.Log.Info(strMessageLine);                        // And this puts it in the log
         }
 
         #region "BackupFailed Message"

@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using System.Collections.Generic;
+using KSP_Log;
 
 namespace ResourceMonitors
 {
@@ -52,11 +53,11 @@ namespace ResourceMonitors
                 node.AddNode(guiSettings);
 
                 time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
-                Log.Info("saved ScenarioModule in " + time.ToString("0.000s"));
+                Main.Log.Info("saved ScenarioModule in " + time.ToString("0.000s"));
             }
             catch (Exception e)
             {
-                Log.Error("OnSave(): " + e.ToString());
+                Main.Log.Error("OnSave(): " + e.ToString());
             }
         }
 
@@ -112,7 +113,7 @@ namespace ResourceMonitors
                     }
 
                     time = (DateTime.Now.Ticks - time) / TimeSpan.TicksPerSecond;
-                    Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
+                    Main.Log.Info("retrieved ScenarioModule in " + time.ToString("0.000s"));
                 }
                 else
                 {
@@ -127,13 +128,17 @@ namespace ResourceMonitors
 
         public static void ResetDefaultRMD()
         {
+            Main.Log.Info("Scenario_Module.ResetDefaultRMD");
             if (defaultRMD == null)
                 defaultRMD = new List<ResourceMonitorDef>();
             else
                 defaultRMD.Clear();
             if (Main.initialDefaultRMD != null)
                 foreach (var a in Main.initialDefaultRMD)
+                {
+                    Main.Log.Info("Loading to defaultRMD: " + a.resname);
                     defaultRMD.Add(new ResourceMonitorDef(a));
+                }
         }
     }
 }

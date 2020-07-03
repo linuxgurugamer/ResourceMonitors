@@ -45,7 +45,7 @@ namespace ResourceMonitors
         {
             if (HaystackReContinued.API.fetch != null)
             {
-                Log.Info("ResourceMonitors.ButtonClick");
+                Main.Log.Info("ResourceMonitors.ButtonClick");
                 HaystackReContinued.API.ButtonClick();
 
                 HaystackReContinued.API.SetVisibility(VesselType.Debris, false);

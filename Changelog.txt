@@ -1,5 +1,10 @@
 Changelog
 
+0.0.1
+	Added code to only allow to be active on vessels with ModuleCommand
+	Eliminated the unexpected duplicate resources if common resources are allocated
+	Added hiding of window when F2 is pressed
+
 0.0.0.3
 	Fixed nullref when going to the main menu due to no game loaded
 

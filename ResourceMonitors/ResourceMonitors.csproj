@@ -44,9 +44,19 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>R:\KSP_1.8.1_dev\GameData\HaystackContinued\Plugins\HaystackContinued.dll</HintPath>
     </Reference>
+    <Reference Include="KSP_Log">
+      <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\KSP_Log.dll</HintPath>
+    </Reference>
+    <Reference Include="SpaceTuxUtility">
+      <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\SpaceTuxUtility.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
       <HintPath>R:\KSP_1.8.1_dev\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
+    </Reference>
+    <Reference Include="VesselModuleSave, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\VesselModuleSave.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -70,12 +80,6 @@
     <Compile Include="RegisterToolbar.cs" />
     <Compile Include="SoundSelectionWindow.cs" />
     <Compile Include="Vessel_Module.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\VesselModuleSave\VesselModuleSave.csproj">
-      <Project>{d5608037-2c1d-45f1-9c17-051e3417e644}</Project>
-      <Name>VesselModuleSave</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="AssemblyVersion.tt">

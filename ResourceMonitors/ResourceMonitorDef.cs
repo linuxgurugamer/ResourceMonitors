@@ -41,9 +41,9 @@ namespace ResourceMonitors
             this.minAmt = minAmt;
 
             if (!SetResource(resname))
-                Log.Error("Resource can't be set: " + resname);
+                Main.Log.Error("Resource can't be set: " + resname);
             if (!InitSoundplayer())
-                Log.Error("Soundplayer can't be initialized");
+                Main.Log.Error("Soundplayer can't be initialized");
         }
 
         public ResourceMonitorDef(ResourceMonitorDef r)
@@ -55,13 +55,13 @@ namespace ResourceMonitors
             this.Enabled = r.Enabled;
             this.prd = r.prd;
             if (!InitSoundplayer())
-                Log.Error("Soundplayer can't be initialized");
+                Main.Log.Error("Soundplayer can't be initialized");
         }
 
         internal bool SetResource(string resname)
         {
             this.resname = resname;
-            Log.Info("SetResource, rename: " + resname);
+            Main.Log.Info("SetResource, rename: " + resname);
             this.prd = PartResourceLibrary.Instance.GetDefinition(resname);
 
             return (prd != null);

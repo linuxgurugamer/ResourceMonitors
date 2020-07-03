@@ -1,3 +1,17 @@
+HOW... DID... THIS... HAPPEN??? Gene Kerman fumed... "We were so close to comet Linux-GG... SO CLOSE... The whole planet tuned in and watching, and... and the batteries died???"
+"It was not our fault!!!" Bob Kerman complained. "The Probe turned sideways, and the solar panels weren't alligned properly."
+"Oh... so you're saying it's the Engineering team again?" Bill Kerman shot back. "Typical..."
+"Oh, would you two just stop!" Val shouted. "Haven't we had enough without you starting again?"
+For several minutes the bickering went on, until a somewhat meek voice spoke up from the back of the conference room.
+"Sir... Ma'am, please... if I may???" young Margo Kerman interjected. "Perhaps... perhaps... if we had some sort of automated resourse monitor?"
+"A... what?" Gene started to ask, but was cut off by Dr von Kerman, who had stayed mostly out of it until now.
+"Yeees... yeees..." von Kerman nodded. "A device to automatically monitor the resourses, and give us a warning if something is amiss... yeees... this could work"
+Gene looked over at young Margo and smiled. She had only been onthe staff a few days, and already she was making a good impression.
+"OK, Margo... you have ten days before our next scheduled launch." Gene nodded. "Make it so."
+
+=====
+
+
 This mod will allow you to set monitors on any resource in any/all vessels in the game.  An alarm will sound if the level is passed, any time warping will be safely stopped and you will be transported to the vessel in question.
 
 Optionally this will interface with the Haystack Continued mod, if it is installed.
@@ -21,3 +35,5 @@ Resource Monitor
 			XenonGas
 
 	The second is a set of default monitors.  These monitor definitions are normally only used the first time a game is loaded, after a game is loaded those definitions are ignored.  However, there is an option on the Settings page to reload them.
+
+Monitors will only work on vessels that have a ModuleCommand (ie: probe cores, manned, etc);
