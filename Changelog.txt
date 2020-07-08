@@ -1,5 +1,9 @@
 Changelog
 
+0.0.2
+	Added monitoring of high values in addition to low values, useful for things like ore on mining ships
+	Increased window width by 30 pixels to accomodate the additional button 
+
 0.0.1
 	Added code to only allow to be active on vessels with ModuleCommand
 	Eliminated the unexpected duplicate resources if common resources are allocated

@@ -22,6 +22,7 @@ namespace ResourceMonitors
 
         internal string resname;
         internal bool monitorByPercentage;
+        internal bool monitorHighValue;
         internal float percentage; // in file 0-100 (percentage)
         internal double minAmt;
         internal string alarm;
@@ -33,9 +34,24 @@ namespace ResourceMonitors
         internal bool alarmSounding = false;
         internal long alarmStartTime = 0;
 
-        internal ResourceMonitorDef() { }
+        internal void Init ()
+        {
+            resname = "";
+            monitorByPercentage = false;
+            monitorHighValue = false;
+            percentage = 1;
+            minAmt = 1;
+            alarm = "";
+            prd = null;
+
+        }
+        internal ResourceMonitorDef()
+        {
+            Init();
+        }
         internal ResourceMonitorDef(string resname, string alarm, float percentage, double minAmt)
         {
+            Init();
             this.alarm = alarm;
             this.percentage = percentage;
             this.minAmt = minAmt;
@@ -48,6 +64,7 @@ namespace ResourceMonitors
 
         public ResourceMonitorDef(ResourceMonitorDef r)
         {
+            Init();
             this.resname = r.resname;
             this.monitorByPercentage = r.monitorByPercentage;
             this.minAmt = r.minAmt;

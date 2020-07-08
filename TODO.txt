@@ -1,5 +1,4 @@
-Make resource button smaller if only icon being shown
-Show icons in resource selection window
+
 
 
 
@@ -7,3 +6,4 @@ Show icons in resource selection window
 Enhancements
 5.	Write all available resources to txt file on startup for reference
 6.	add new resource to common resources
+

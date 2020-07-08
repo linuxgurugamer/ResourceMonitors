@@ -268,7 +268,9 @@ namespace ResourceMonitors
         float oldWidth = 0;
         void ShowResourceGUIWindow(int windowId)
         {
-            Main.WIDTH = 583;
+            //Main.WIDTH = 583;
+            Main.WIDTH = 613;
+
             previewWidth = 70;
 
             if (HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().altSkin)
@@ -369,9 +371,11 @@ namespace ResourceMonitors
             GUILayout.Label("Alarm Sound", GUILayout.Width(120));
 
 
-            GUILayout.Space(30);
-            GUILayout.Space(15);
+            //GUILayout.Space(30);
+            //GUILayout.Space(15);
+            //GUILayout.Space(30);
 
+            GUILayout.Space(75);
             GUILayout.Label("Amt or % ");
             //GUILayout.FlexibleSpace();
             GUILayout.EndHorizontal();
@@ -447,6 +451,11 @@ namespace ResourceMonitors
                 GUILayout.Space(10);
                 //                                                                            *
                 // ****************************************************************************
+                if (GUILayout.Button(resourceAlert.monitorHighValue ? ">" : "<", GUILayout.Width(20)))
+                {
+                    resourceAlert.monitorHighValue = !resourceAlert.monitorHighValue;
+                }
+                GUILayout.Space(10);
                 var newMonitorByPercentage = GUILayout.Toggle(resourceAlert.monitorByPercentage, "", toggleStyle, GUILayout.Width(30));
                 //GUILayout.Label("%", labelStyle, GUILayout.Width(20));
                 if (newMonitorByPercentage)

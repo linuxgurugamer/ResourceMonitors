@@ -178,16 +178,28 @@ namespace ResourceMonitors
                     for (int i = 0; i < rmdList.Count; i++)
                     {                        
                         rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
-                        bool lowResource = false;
+                        bool resourceMonitorTriggered = false;
 
                         if (GetResourceAmt(rmdList[i].prd.id, out double max, out double cur))
                         {
-                            if (rmdList[i].monitorByPercentage &&  rmdList[i].percentage > 0 && cur / max <= rmdList[i].percentage / 100f)
-                                lowResource = true;
+                            if (rmdList[i].monitorHighValue)
+                            {
+                                if (rmdList[i].monitorByPercentage && rmdList[i].percentage > 0 && ((cur / max) >= rmdList[i].percentage / 100f))
+                                    resourceMonitorTriggered = true;
 
-                            if (!rmdList[i].monitorByPercentage && rmdList[i].minAmt > 0 && cur <= rmdList[i].minAmt)
-                                lowResource = true;
-                            if (lowResource && soundActive)
+                                if (!rmdList[i].monitorByPercentage && rmdList[i].minAmt > 0 && cur >= rmdList[i].minAmt)
+                                    resourceMonitorTriggered = true;
+
+                            }
+                            else
+                            {
+                                if (rmdList[i].monitorByPercentage && rmdList[i].percentage > 0 && cur / max <= rmdList[i].percentage / 100f)
+                                    resourceMonitorTriggered = true;
+
+                                if (!rmdList[i].monitorByPercentage && rmdList[i].minAmt > 0 && cur <= rmdList[i].minAmt)
+                                    resourceMonitorTriggered = true;
+                            }
+                            if (resourceMonitorTriggered && soundActive)
                                 SoundAlarm(i);
                             else
                                 StopAlarm(i);
@@ -222,7 +234,7 @@ namespace ResourceMonitors
         {
             if (!rmdList[i].alarmSounding)
             {
-                ScreenMessages.PostScreenMessage("Low Resource Detected for: " + rmdList[i].resname, 5);
+                ScreenMessages.PostScreenMessage((rmdList[i].monitorHighValue?"High":"Low") + " Resource Detected for: " + rmdList[i].resname, 5);
                 rmdList[i].soundplayer.LoadNewSound(Main.SOUND_DIR + rmdList[i].alarm, HighLogic.CurrentGame.Parameters.CustomParams<RM_1>().resourceAlertRepetition);
                 rmdList[i].soundplayer.SetVolume(HighLogic.CurrentGame.Parameters.CustomParams<RM_2>().masterVolume);
                 rmdList[i].soundplayer.PlaySound();
