@@ -18,7 +18,7 @@ namespace ResourceMonitors
             get
             {
                 if (_HaystackAvailable == null)
-                    _HaystackAvailable = HasMod("HaystackContinued");
+                    _HaystackAvailable = HasMod("HaystackReContinued");
                 return (bool)_HaystackAvailable;
             }
         }

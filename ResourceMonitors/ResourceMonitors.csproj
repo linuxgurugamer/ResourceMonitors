@@ -38,25 +38,24 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="ClickThroughBlocker">
-      <HintPath>R:\KSP_1.8.1_dev\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
+      <HintPath>$(KSPDIR)\GameData\000_ClickThroughBlocker\Plugins\ClickThroughBlocker.dll</HintPath>
     </Reference>
-    <Reference Include="HaystackContinued, Version=0.5.6.6, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>R:\KSP_1.8.1_dev\GameData\HaystackContinued\Plugins\HaystackContinued.dll</HintPath>
+    <Reference Include="HaystackReContinued">
+      <HintPath>$(KSPDIR)\GameData\HaystackContinued\Plugins\HaystackReContinued.dll</HintPath>
     </Reference>
     <Reference Include="KSP_Log">
-      <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\KSP_Log.dll</HintPath>
+      <HintPath>$(KSPDIR)\GameData\SpaceTuxLibrary\Plugins\KSP_Log.dll</HintPath>
     </Reference>
     <Reference Include="SpaceTuxUtility">
-      <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\SpaceTuxUtility.dll</HintPath>
+      <HintPath>$(KSPDIR)\GameData\SpaceTuxLibrary\Plugins\SpaceTuxUtility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="ToolbarControl">
-      <HintPath>R:\KSP_1.8.1_dev\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
+      <HintPath>$(KSPDIR)\GameData\001_ToolbarControl\Plugins\ToolbarControl.dll</HintPath>
     </Reference>
     <Reference Include="VesselModuleSave, Version=0.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>R:\KSP_1.9.1_dev\GameData\SpaceTuxLibrary\Plugins\VesselModuleSave.dll</HintPath>
+      <HintPath>$(KSPDIR)\GameData\SpaceTuxLibrary\Plugins\VesselModuleSave.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
