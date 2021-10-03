@@ -3,6 +3,7 @@ Changelog
 0.0.2.2
 	Added AssemblyFileVersion
 	Updated version file for 1.12
+	Updated reference for renamed HaystackReContinued dll
 
 0.0.2.1
 	Added support for KerbalChangeLog
